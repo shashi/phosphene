@@ -1,3 +1,4 @@
+import pdb
 import scipy
 import numpy
 import pygame
@@ -7,6 +8,11 @@ from pygame.draw import *
 def getFFTIdx(Fs, Hz, n):
     assert(Hz <= Fs / 2);
     return round(Fs / n * Hz)
+
+def getNotes():
+    return [0] \
+           + [16.35 * pow(2, i/12.0) + 1 for i in range(0, 101)] \
+           + [11050, 22100]
 
 def bin(n, fft, grouping=lambda i: i):
     """
@@ -19,22 +25,20 @@ def bin(n, fft, grouping=lambda i: i):
     # discard second half -- useless by
     # Nyquist criteria
 
-    l = len(fft)
-    fft = abs(fft)
-    points = fft[0:l/2 - 1]
-    N = (l-1) / 2
-    k = N / n
-
-    if isinstance(grouping, (list,tuple)):
-        splitPoints = numpy.array(grouping, dtype=float)
+    if isinstance(n, (list,tuple)):
+        splitPoints = numpy.array(n, dtype=float)
+        n = len(n) - 1
     elif hasattr(grouping, '__call__'):
         splitPoints = numpy.array([grouping(i) for i in range(0, n + 1)], \
                 dtype=float)
-    splitIdx = splitPoints / abs(max(splitPoints)) * N
+    l = len(fft)
+
+    splitIdx = splitPoints / abs(max(splitPoints)) * l
     splitIdx = [int(i) for i in splitIdx]
+    #pdb.set_trace()
 
     return [sum(fft[splitIdx[i-1]:splitIdx[i]]) for i in range(1, n + 1)]
-    
+
 WHITE = (255, 255, 255)
 def barGraph(surface, rectangle, data):
     """
@@ -44,21 +48,13 @@ def barGraph(surface, rectangle, data):
 
     l = len(data)
     w = W / l
-    m = sum(data)
-    if m > 0:
-        for i in range(0, l):
-            h = scipy.log(abs(data[i])) * 20
-            x = x0 + i * w
-            y = H - h
-            rect(surface, WHITE, (x, y, 0.9 * w, h))
+    for i in range(0, l):
+        h = scipy.log(abs(data[i])+1) * 5
+        x = x0 + i * w
+        y = H - h
+        rect(surface, WHITE, (x, y, 0.9 * w, h))
 
-def average(data):
-    if len(data) > 1:
-        l = len(data[0])
-        return map(lambda r: sum(r) / l, data)
-    else: return []
-
-def getSFFT(data, i, w):
+def getSFFT(data, i, w, window=scipy.hamming):
     """
         Returns the short time FFT at i,
         window width will be 1.5 * delta
@@ -66,10 +62,11 @@ def getSFFT(data, i, w):
     """
 
     l = len(data)
-    start = max(0, i - w * 1 / 2);
+    start = max(0, i - w * 1 / 2 - 1);
     end = min(i + w * 1 / 2, l)
-    samples = average(data[start:end])
-    window = scipy.hamming(len(samples))
+    samples = data[start:end]
+    envelope = window(len(samples))
 
-    return scipy.fft(window * samples)
-
+    spectrum = abs(scipy.fft(envelope * samples))
+    specL = len(spectrum)
+    return spectrum[0:specL/2]

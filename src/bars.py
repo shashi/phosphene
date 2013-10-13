@@ -15,18 +15,22 @@ sF, data = audio.read("/home/shashi/death.mp3")
 # soundObj is a pygame.mixer.Sound object
 soundObj = audio.makeSound(sF, data)
 
+averaged = (data[:, 0] + data[:, 1]) / 2
+
 # this function is passed to audio.playAndRun to be run as
 # often as required and possible.
 # i is approximately the sample number currently being played
 # delta is the number of samples since the previous call to loop
-def loop(i, delta):
-    if delta > 0:
-        fps = sF / delta
+def loop(i, fps):
+    if fps > 0:
         print 'fps:', fps
-        sff = getSFFT(data, i, 0.04 * sF)
-        bins = bin(11, sff, [0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 22100])
         surface.fill((0,0,0))
-        barGraph(surface, (20, 40, 600, 400), bins)
+        spectrum = getSFFT(averaged, i, 1024)
+        binsHamLin = spectrum #bin(128, spectrum)
+        barGraph(surface, (20, 20, 600, 200), binsHamLin)
+        #sff = getSFFT(averaged, i, 1023, lambda n: 1)
+        #binsRectLin = bin(128, sff)
+        #barGraph(surface, (20, 220, 600, 200), binsRectLin)
         display.update()
 
 # pass the Sound object and loop function, set update frequency to 90Hz

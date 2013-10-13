@@ -57,14 +57,14 @@ def playAndRun(sound, loop, cps=60):
     sF = pygame.mixer.get_init()[0]
     callSpacing = 1.0 / cps
     sound.play()
-    prev_i = 0
+    prev_i = -1
     # Cheap hack for finding the sample we are playing.
     try:
         start = getTime()
         while pygame.mixer.get_busy():
             tic = getTime()
             i = int((tic-start) * sF)
-            loop(i, i - prev_i)
+            loop(i, sF / float(i - prev_i))
             prev_i = i
             # atrocious assumptions, but they'll serve the purpose
             toc = getTime()
