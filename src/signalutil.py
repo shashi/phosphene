@@ -4,6 +4,10 @@ import pygame
 from pygame import display
 from pygame.draw import *
 
+def getFFTIdx(Fs, Hz, n):
+    assert(Hz <= Fs / 2);
+    return round(Fs / n * Hz)
+
 def bin(n, fft, grouping=lambda i: i):
     """
         Put fft data into n bins by adding them.
@@ -18,12 +22,17 @@ def bin(n, fft, grouping=lambda i: i):
     l = len(fft)
     fft = abs(fft)
     points = fft[0:l/2 - 1]
-    N = l / 2
+    N = (l-1) / 2
     k = N / n
 
-    splitPoints = numpy.array([grouping(i) for i in range(0, n + 1)], dtype=float)
+    if isinstance(grouping, (list,tuple)):
+        splitPoints = numpy.array(grouping, dtype=float)
+    elif hasattr(grouping, '__call__'):
+        splitPoints = numpy.array([grouping(i) for i in range(0, n + 1)], \
+                dtype=float)
     splitIdx = splitPoints / abs(max(splitPoints)) * N
     splitIdx = [int(i) for i in splitIdx]
+
     return [sum(fft[splitIdx[i-1]:splitIdx[i]]) for i in range(1, n + 1)]
     
 WHITE = (255, 255, 255)
@@ -35,12 +44,13 @@ def barGraph(surface, rectangle, data):
 
     l = len(data)
     w = W / l
-    m = max(data)
-    for i in range(0, l):
-        h = scipy.log(abs(data[i])+1) * 20
-        x = x0 + i * w
-        y = H - h
-        rect(surface, WHITE, (x, y, 0.9 * w, h))
+    m = sum(data)
+    if m > 0:
+        for i in range(0, l):
+            h = scipy.log(abs(data[i])) * 20
+            x = x0 + i * w
+            y = H - h
+            rect(surface, WHITE, (x, y, 0.9 * w, h))
 
 def average(data):
     if len(data) > 1:

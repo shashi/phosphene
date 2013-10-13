@@ -34,8 +34,6 @@ def remove_list_item(arg):
         my_list.resize()
         my_list.repaint()
         files.pop(item-1)
-        
-       
 
 def add_list_item(arg):
     global _count

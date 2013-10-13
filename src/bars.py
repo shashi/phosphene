@@ -24,7 +24,7 @@ def loop(i, delta):
         fps = sF / delta
         print 'fps:', fps
         sff = getSFFT(data, i, 0.04 * sF)
-        bins = bin(30, sff, lambda i: i)
+        bins = bin(11, sff, [0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 22100])
         surface.fill((0,0,0))
         barGraph(surface, (20, 40, 600, 400), bins)
         display.update()
