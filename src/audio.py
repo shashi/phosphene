@@ -28,9 +28,13 @@ def read(fname):
     # www.snip2code.com/Snippet/1767/Convert-mp3-to-numpy-array--Ugly--but-it
     suffix = digest(fname)[0:6]
     oname = '/tmp/tmp'+ suffix +'.wav'
+
     # ask lame to decode it to a wav file
-    cmd = 'lame --decode %s %s' % (fname, oname)
-    os.system(cmd)
+    if not os.path.exists(oname):
+        # Well, if you ctrl-c before conversion, you're going to
+        # have to manually delete the file.
+        cmd = 'lame --decode %s %s' % (fname, oname)
+        os.system(cmd)
 
     # now read using scipy.io.wavfile
     data = wav.read(oname)

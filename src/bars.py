@@ -1,4 +1,6 @@
-# An example showing how to use the audio package
+# An example showing how to use the audio module
+
+import sys
 import pygame
 from pygame import display
 from pygame.draw import *
@@ -6,12 +8,18 @@ from pygame.draw import *
 import audio
 from signalutil import *
 
+if len(sys.argv) < 2:
+    print "Usage: %s file.mp3" % sys.argv[0]
+    sys.exit(1)
+else:
+    fPath = sys.argv[1]
+
 # Open a pygame display, required for showing the rectangles
 pygame.init()
 surface = display.set_mode((640, 480))
 
 # read audio data into a numpy array, sF is the sampling frequency
-sF, data = audio.read("/home/shashi/death.mp3")
+sF, data = audio.read(fPath)
 # soundObj is a pygame.mixer.Sound object
 soundObj = audio.makeSound(sF, data)
 
@@ -26,11 +34,11 @@ def loop(i, fps):
         print 'fps:', fps
         surface.fill((0,0,0))
         spectrum = getSFFT(averaged, i, 1024)
-        binsHamLin = spectrum #bin(128, spectrum)
+        binsHamLin = bin(64, spectrum)
         barGraph(surface, (20, 20, 600, 200), binsHamLin)
-        #sff = getSFFT(averaged, i, 1023, lambda n: 1)
-        #binsRectLin = bin(128, sff)
-        #barGraph(surface, (20, 220, 600, 200), binsRectLin)
+        sff = getSFFT(averaged, i, 1024, lambda n: 1) # no window
+        binsRectLin = bin(64, sff)
+        barGraph(surface, (20, 220, 600, 200), binsRectLin)
         display.update()
 
 # pass the Sound object and loop function, set update frequency to 90Hz
