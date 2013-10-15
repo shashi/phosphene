@@ -1,11 +1,6 @@
 import pdb
 import scipy
 import numpy
-import pygame
-from pygame import display
-from pygame.draw import *
-from pygame import Color
-import math
 
 def getFFTIdx(Fs, Hz, n):
     assert(Hz <= Fs / 2);
@@ -40,50 +35,6 @@ def bin(n, fft, grouping=lambda i: i):
     #pdb.set_trace()
 
     return [sum(fft[splitIdx[i-1]:splitIdx[i]]) for i in range(1, n + 1)]
-
-WHITE = (255, 255, 255)
-def barGraph(surface, rectangle, data, transform=lambda y: scipy.log(y + 1)):
-    """
-        drawing contains (x, y, width, height)
-    """
-    x0, y0, W, H = rectangle
-
-    l = len(data)
-    w = W / l
-    m = transform(max(data))
-    for i in range(0, l):
-        if m > 0:
-            p = transform(data[i])
-            h = p * 5
-            hue = p / m
-            c = Color(0, 0, 0, 0)
-            c.hsva = ((1-hue) * 360, 100, 100, 0)
-            x = x0 + i * w
-            y = y0 + H - h
-            rect(surface, c, \
-                    (x, y, 0.9 * w, h))
-
-
-def circlerays(surface, center, data, transform=lambda y: scipy.log(y + 1)):
-
-    x0, y0 = center
-    
-    total = math.radians(360)
-    l = len(data)
-    m = transform(max(data))
-    part = total/l
-    for i in range(0, l):
-        if m > 0:
-            p = transform(data[i])
-            h = p * 5
-            hue = p / m
-            c = Color(0, 0, 0, 0)
-            c.hsva = ((1-hue) * 360, 100, 100, 0)
-            x = x0 + h*math.cos(part * i)
-            y = y0 + h*math.sin(part*i)
-            line(surface, c, 
-                    (x0,y0),(x,y),1)
-
 
 def getSFFT(data, i, w, window=scipy.hamming):
     """

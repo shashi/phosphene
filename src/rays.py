@@ -7,6 +7,7 @@ from pygame.draw import *
 
 import audio
 from signalutil import *
+from graphs import *
 
 if len(sys.argv) < 2:
     print "Usage: %s file.mp3" % sys.argv[0]
@@ -35,10 +36,10 @@ def loop(i, fps):
         surface.fill((0,0,0))
         spectrum = getSFFT(averaged, i, 1024)
         binsHamLin = bin(64, spectrum)
-        circlerays(surface, (160,240), binsHamLin)
+        circleRays(surface, (160,240), binsHamLin)
         sff = getSFFT(averaged, i, 1024, lambda n: 1) # no window
         binsRectLin = bin(64, sff)
-        circlerays(surface, (480,240), binsRectLin)
+        circleRays(surface, (480,240), binsRectLin)
         display.update()
 
 # pass the Sound object and loop function, set update frequency to 90Hz

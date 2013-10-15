@@ -4,9 +4,11 @@ import sys
 import pygame
 from pygame import display
 from pygame.draw import *
+import scipy
 
 import audio
 from signalutil import *
+from graphs import *
 
 if len(sys.argv) < 2:
     print "Usage: %s file.mp3" % sys.argv[0]
@@ -38,7 +40,7 @@ def loop(i, fps):
         barGraph(surface, (20, 20, 600, 200), binsHamLin)
         sff = getSFFT(averaged, i, 1024, lambda n: 1) # no window
         binsRectLin = bin(64, sff)
-        barGraph(surface, (20, 220, 600, 200), binsRectLin)
+        barGraph(surface, (20, 220, 600, 200), binsRectLin, lambda v: scipy.log(v+1)**2 / 100)
         display.update()
 
 # pass the Sound object and loop function, set update frequency to 90Hz
