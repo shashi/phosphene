@@ -41,9 +41,9 @@ def circleRays(surface, center, data, transform=lambda y: scipy.log(y + 1)):
             hue = p / m
             c = Color(0, 0, 0, 0)
             c.hsva = ((1-hue) * 360, 100, 100, 0)
-            x = x0 + h*math.cos(part * i)
-            y = y0 + h*math.sin(part*i)
+            x = x0 + (m*2+h)*math.cos(part * i)
+            y = y0 + (m*2+h)*math.sin(part*i)
             line(surface, c, 
                     (x0,y0),(x,y),1)
-
-
+            #circle(surface,c, center,int(m*2),0)
+   
