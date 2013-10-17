@@ -21,11 +21,12 @@ def barGraph(surface, rectangle, data, transform=lambda y: scipy.log(y + 1)):
             h = p * 5
             hue = p / m
             c = Color(0, 0, 0, 0)
-            c.hsva = ((1-hue) * 360, 100, 100, 0)
+            c.hsva = ((1-hue) * 180, 100, 100, 0)
             x = x0 + i * w
             y = y0 + H - h
             rect(surface, c, \
                     (x, y, 0.9 * w, h))
+
 def circleRays(surface, center, data, transform=lambda y: scipy.log(y + 1)):
 
     x0, y0 = center

@@ -47,8 +47,15 @@ def getSFFT(data, i, w, window=scipy.hamming):
     start = max(0, i - w * 1 / 2 - 1);
     end = min(i + w * 1 / 2, l)
     samples = data[start:end]
-    envelope = window(len(samples))
+    if hasattr(window, '__call__'):
+        envelope = window(len(samples))
+    else:
+        envelope = window
 
-    spectrum = abs(scipy.fft(envelope * samples))
+    l= len(samples)
+    try:
+        spectrum = abs(scipy.fft(envelope * samples))
+    except:
+        spectrum = abs(scipy.fft(samples))
     specL = len(spectrum)
     return spectrum[0:specL/2]
