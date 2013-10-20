@@ -31,23 +31,20 @@ averaged = (data[:, 0] + data[:, 1]) / 2
 # often as required and possible.
 # i is approximately the sample number currently being played
 # delta is the number of samples since the previous call to loop
-N = 1024
-PI = 6.2831853 / 2
-mult = PI / N
-power = 1
-envelope = numpy.array([pow(0.5 + 0.5 * scipy.sin(i*mult - 1.5707963268), power) for i in range(0, N)])
-N_2 = N / 2
-equalize = numpy.array([-0.04 * scipy.log((N_2-i) * 1.0/N_2) for i in range(0, N_2)])
+N = 2048
+envelope = envelopeVector(N)
+equalize = equalizeVector(N)
 
 def loop(i, fps):
     if fps > 0:
         print 'fps:', fps
         surface.fill((0,0,0))
-        spectrum = getSFFT(averaged, i, 1024, envelope)
-        if len(spectrum) == 512:
+        spectrum = getSFFT(averaged, i, N, envelope)
+        if len(spectrum) == N/2:
             spectrum = spectrum * equalize
-        binsHamLin = bin(128, spectrum)
-        barGraph(surface, (20, 20, 600, 440), binsHamLin, lambda v: abs(v) / 300)
+        binsHamLin = group(64, spectrum)
+        barGraph(surface, (20, 20, 600, 440), binsHamLin[:-8], lambda v: abs(v) / 1024)
+        #circleRays(surface, (480,240), binsHamLin)
         display.update()
 
 # pass the Sound object and loop function, set update frequency to 90Hz

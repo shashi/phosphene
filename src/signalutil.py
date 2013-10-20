@@ -11,7 +11,7 @@ def getNotes():
            + [16.35 * pow(2, i/12.0) + 1 for i in range(0, 101)] \
            + [11050, 22100]
 
-def bin(n, fft, grouping=lambda i: i):
+def group(n, fft, grouping=lambda i: i):
     """
         Put fft data into n bins by adding them.
 
@@ -59,3 +59,15 @@ def getSFFT(data, i, w, window=scipy.hamming):
         spectrum = abs(scipy.fft(samples))
     specL = len(spectrum)
     return spectrum[0:specL/2]
+
+def equalizeVector(N, scale=-0.02):
+    N_2 = N / 2
+    equalize = numpy.array([scale * scipy.log((N_2-i) * 1.0/N_2) \
+            for i in range(0, N_2)])
+
+    return equalize
+
+def envelopeVector(N, power=1):
+    mult = scipy.pi / N
+    envelope = numpy.array([pow(0.5 + 0.5 * scipy.sin(i*mult - 1.5707963268), power) for i in range(0, N)])
+    return envelope

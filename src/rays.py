@@ -35,10 +35,10 @@ def loop(i, fps):
         print 'fps:', fps
         surface.fill((0,0,0))
         spectrum = getSFFT(averaged, i, 1024)
-        binsHamLin = bin(64, spectrum)
+        binsHamLin = group(64, spectrum)
         circleRays(surface, (160,240), binsHamLin)
         sff = getSFFT(averaged, i, 1024, lambda n: 1) # no window
-        binsRectLin = bin(64, sff)
+        binsRectLin = group(64, sff)
         circleRays(surface, (480,240), binsRectLin)
         display.update()
 

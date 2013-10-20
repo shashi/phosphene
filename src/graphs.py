@@ -46,5 +46,5 @@ def circleRays(surface, center, data, transform=lambda y: scipy.log(y + 1)):
             y = y0 + (m*2+h)*math.sin(part*i)
             line(surface, c, 
                     (x0,y0),(x,y),1)
-            #circle(surface,c, center,int(m*2),0)
+            circle(surface,c, center,int(m*2),0)
    
