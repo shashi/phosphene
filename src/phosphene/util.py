@@ -1,5 +1,5 @@
 import numpy
-__all__ = ['memoize', 'memoizeBy', 'numpymap', 'indexable']
+__all__ = ['memoize', 'memoizeBy', 'numpymap', 'indexable', 'reverse']
 # Helper functions
 def memoize(f, key=None):
     mem = {}
@@ -54,3 +54,8 @@ def indexable(f, offset=0):
 
 def windowedMap(f, samples, width, overlap):
     return res
+
+def reverse(l):
+    m = l
+    m.reverse()
+    return m

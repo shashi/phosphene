@@ -6,7 +6,7 @@ from pygame.draw import *
 from pygame import Color
 import math
 
-def barGraph(surface, data, transform=lambda y: y / 200):
+def barGraph(surface, data):
     """
         drawing contains (x, y, width, height)
     """
@@ -15,18 +15,14 @@ def barGraph(surface, data, transform=lambda y: y / 200):
         x0, y0, W, H = rectangle
         l = len(data)
         w = W / l
-        m = transform(max(data))
         for i in range(0, l):
-            if m > 0:
-                p = transform(data[i])
-                h = p * 5
-                hue = p / m
-                c = Color(0, 0, 0, 0)
-                c.hsva = ((1-hue) * 180, 100, 100, 0)
-                x = x0 + i * w
-                y = y0 + H - h
-                rect(surface, c, \
-                        (x, y, 0.9 * w, h))
+            h = max(0, min(1, data[i]))
+            c = Color(0, 0, 0, 0)
+            c.hsva = ((1-h) * 180, 100, 100, 0)
+            x = x0 + i * w
+            y = y0 + H * (1 - h)
+            rect(surface, c, \
+                    (x, y, 0.9 * w, h * H))
     return f
 
 def circleRays(surface, center, data, transform=lambda y: scipy.log(y + 1)):
@@ -56,6 +52,6 @@ def graphsGraphs(surface, data, direction=0,graph=lambda *arg: barGraph(*arg)):
         d = H / len(data)
         h = d
         for l in data:
-            graph(surface, l)((x0, y0, W, h))
+            graph(surface, l)((x0, y0+h-d, W, h))
             h += d
     return f

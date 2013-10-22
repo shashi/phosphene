@@ -11,5 +11,9 @@ def expAvg(f, ratio=lambda s: 0.5):
     h = (lambda s: ratio) if isinstance(ratio, float) else ratio
 
     return foldp(lambda s, prev: (g(s) * h(s) + \
-            prev[1] * (1-h(s)), prev[0]), (numpy.array([0]), numpy.array([0])))
+            prev[1] * (1-h(s)), prev[0]), 0)
 
+def differential(f):
+    S.flux = foldp( \
+            lambda s, prev: \
+            (f(s), f(s) - prev[1], s.fft), 0)

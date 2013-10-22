@@ -26,10 +26,13 @@ def foldp(f, init):
     """ takes a function, a time varying value, initial value
       and reduces it over time"""
     State = lambda: 0 # hack to let me store this
+    State.store = init
     State.val = init
     def g(sig):
-        State.val = f(sig, State.val)
-        return State.val
+        val, store = f(sig, (State.val, State.store))
+        State.store = store
+        State.val = val
+        return val
     return lift(g)
 
 class Signal:
