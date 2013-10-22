@@ -6,7 +6,7 @@ from pygame.draw import *
 from pygame import Color
 import math
 
-def barGraph(surface, rectangle, data, transform=lambda y: scipy.log(y + 1)):
+def barGraph(surface, rectangle, data, transform=lambda y: y / 200):
     """
         drawing contains (x, y, width, height)
     """

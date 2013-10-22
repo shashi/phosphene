@@ -3,13 +3,13 @@ import pygame
 from pygame import display
 from pygame.draw import *
 import scipy
-
-import audio
-from util import *
-from sig import *
-from dsp import *
-from graphs import *
 import time
+
+from phosphene import audio
+from phosphene.util import *
+from phosphene.signal import *
+from phosphene.dsp import *
+from phosphene.graphs import *
 
 pygame.init()
 surface = display.set_mode((640, 480))
