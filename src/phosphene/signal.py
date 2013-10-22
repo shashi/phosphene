@@ -22,13 +22,14 @@ class lift:
             elif indexable == False:
                 return self.obj[sig.x]
 
-def foldp(f, sig, init):
+def foldp(f, init):
     """ takes a function, a time varying value, initial value
       and reduces it over time"""
-    val = init
+    State = lambda: 0 # hack to let me store this
+    State.val = init
     def g(sig):
-        val = f(sig, val)
-        return val
+        State.val = f(sig, State.val)
+        return State.val
     return lift(g)
 
 class Signal:
