@@ -1,10 +1,12 @@
-import pdb
 import scipy
 import numpy
+from util import *
 
-def getFFTIdx(Fs, Hz, n):
+def fftIdx(Fs, Hz, n):
     assert(Hz <= Fs / 2);
     return round(Fs / n * Hz)
+
+memFftIdx = memoize(fftIdx)
 
 def getNotes():
     return [0] \
@@ -19,9 +21,6 @@ def group(n, fft, grouping=lambda i: i):
         lambda i: i       --> linear grouping
         lambda i: 2 ** i  --> logarithmic
     """
-    # discard second half -- useless by
-    # Nyquist criteria
-
     if isinstance(n, (list,tuple)):
         splitPoints = numpy.array(n, dtype=float)
         n = len(n) - 1
@@ -36,38 +35,34 @@ def group(n, fft, grouping=lambda i: i):
 
     return [sum(fft[splitIdx[i-1]:splitIdx[i]]) for i in range(1, n + 1)]
 
-def getSFFT(data, i, w, window=scipy.hamming):
+def fft(samples, envelope=None, equalize=None):
     """
         Returns the short time FFT at i,
         window width will be 1.5 * delta
         1 * delta after i and 0.5 * delta before
     """
 
-    l = len(data)
-    start = max(0, i - w * 1 / 2 - 1);
-    end = min(i + w * 1 / 2, l)
-    samples = data[start:end]
-    if hasattr(window, '__call__'):
-        envelope = window(len(samples))
-    else:
-        envelope = window
-
     l= len(samples)
-    try:
-        spectrum = abs(scipy.fft(envelope * samples))
-    except:
+    if envelope is not None:
+        spectrum = abs(scipy.fft(samples * envelope * scipy.hamming(l)))
+    else:
         spectrum = abs(scipy.fft(samples))
     specL = len(spectrum)
-    return spectrum[0:specL/2]
+    if equalize is not None:
+        return spectrum[0:specL/2] * equalize
+    else:
+        return spectrum[0:specL/2]
 
-def equalizeVector(N, scale=-0.02):
+def equalize(N, scale=-0.02):
     N_2 = N / 2
-    equalize = numpy.array([scale * scipy.log((N_2-i) * 1.0/N_2) \
-            for i in range(0, N_2)])
+    f = lambda i: scale * scipy.log((N_2-i) * 1.0/N_2)
+    return numpymap(f, range(0, N_2))
 
-    return equalize
+equalize=memoize(equalize)
 
-def envelopeVector(N, power=1):
+def envelope(N, power=1):
     mult = scipy.pi / N
-    envelope = numpy.array([pow(0.5 + 0.5 * scipy.sin(i*mult - 1.5707963268), power) for i in range(0, N)])
-    return envelope
+    f = lambda i: pow(0.5 + 0.5 * scipy.sin(i*mult - 1.5707963268), power)
+    return numpymap(f, range(0, N))
+
+envelope=memoize(envelope)
