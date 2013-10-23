@@ -127,15 +127,25 @@ def findIndexArray(array): #Takes a 3-D numpy array containing bool of all the L
 	return indices
 
 
-def smallcube(size):
+def wireframecube(size):
 	if size % 2 == 1:
 		size = size+1
 	half = size/2
-	start = 4 - half
-	end = 4 + half
+	start = 5 - half
+	end = 5 + half - 1
 	cubecords = [(x,y,z) for x in (start,end) for y in (start,end) for z in range(start,end+1)]+[(x,z,y) for x in (start,end) for y in (start,end) for z in range(start,end+1)] + [(z,y,x) for x in (start,end) for y in (start,end) for z in range(start,end+1)]
 	return cubecords
-	
+
+def cubes(size):
+	if size % 2 == 1:
+		size = size+1
+	half = size/2
+	cubecords = []
+	for i in range(0,size):
+		for j in range(0,size):
+			for k in range(0,size):
+				cubecords.append((5-half+i,5-half+j,5-half+k))	
+	return cubecords
 if __name__ == '__main__':
     
     pv = ProjectionViewer(400, 300)
@@ -148,11 +158,8 @@ if __name__ == '__main__':
     YZface = findIndex((0,y,z) for y in range(0,10) for z in range(0,10)) 
     count = 0 
     for k in range(1,150000):
-	if k%5000<=2500:
-		cube.setVisible([])
 	if k%5000 ==2500:
-		count = (count+1)%10
-	if k%5000>2500:                         
-		cube.setVisible(findIndex(smallcube(count)))
+		count = (count+2)%11                        
+		cube.setVisible(findIndex(wireframecube(count)))
 	pv.run()
 		

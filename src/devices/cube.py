@@ -4,7 +4,8 @@ import math
 from device import Device
 from cubelib import emulator
 from cubelib import mywireframe as wireframe
-
+from animations import *
+import time
 # A class for the cube
 class Cube(Device):
     def __init__(self, port, dimension=10, emulator=False):
@@ -55,5 +56,10 @@ cube = Cube("", emulator=True)
 pv = emulator.ProjectionViewer(640,480)
 wf = wireframe.Wireframe()
 pv.createCube(wf)
+count = 1;
 while True:
-    cube.redraw()
+    	wireframeExpandContract(cube)
+	cube.redraw()
+	count += 2
+	time.sleep(.1)
+
