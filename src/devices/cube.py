@@ -59,7 +59,7 @@ class Cube(Device):
                             visible.append((x,y,z))
             wf.setVisible(emulator.findIndex(visible))
             pv.run()
-						 
+
 cube = Cube("", emulator=True)
 while True:
     cube.redraw()

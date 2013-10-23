@@ -1,3 +1,4 @@
+import pdb
 import scipy
 import numpy
 import pygame
@@ -13,7 +14,10 @@ def barGraph(surface, data):
 
     def f(rectangle):
         x0, y0, W, H = rectangle
-        l = len(data)
+        try:
+            l = len(data)
+        except:
+            pdb.set_trace()
         w = W / l
         for i in range(0, l):
             h = max(0, min(1, data[i]))

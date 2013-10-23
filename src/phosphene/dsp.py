@@ -35,34 +35,33 @@ def group(n, fft, grouping=lambda i: i):
 
     return [sum(fft[splitIdx[i-1]:splitIdx[i]]) for i in range(1, n + 1)]
 
-def fft(samples, envelope=None, equalize=None):
+def fft(samples, out_n, env=None, eq=None):
     """
         Returns the short time FFT at i,
         window width will be 1.5 * delta
         1 * delta after i and 0.5 * delta before
     """
 
-    l= len(samples)
-    if envelope is not None:
-        spectrum = abs(scipy.fft(samples * envelope * scipy.hamming(l)))
+    in_n = len(samples)
+    if env:
+        spectrum = abs(scipy.fft(samples * envelope(in_n)))
     else:
         spectrum = abs(scipy.fft(samples))
-    specL = len(spectrum)
-    if equalize is not None:
-        return spectrum[0:specL/2] * equalize
+
+    if eq:
+        return group(out_n, spectrum[0:in_n/2]) * equalize(out_n)
     else:
-        return spectrum[0:specL/2]
+        return group(out_n, spectrum[0:in_n/2])
 
 def equalize(N, scale=-0.02):
-    N_2 = N / 2
-    f = lambda i: scale * scipy.log((N_2-i) * 1.0/N_2)
-    return numpymap(f, range(0, N_2))
+    f = lambda i: scale * scipy.log((N-i) * 1.0/N)
+    return numpymap(f, range(0, N))
 
 equalize=memoize(equalize)
 
 def envelope(N, power=1):
     mult = scipy.pi / N
-    f = lambda i: pow(0.5 + 0.5 * scipy.sin(i*mult - 1.5707963268), power)
+    f = lambda i: pow(0.5 + 0.5 * scipy.sin(i*mult - scipy.pi / 2), power)
     return numpymap(f, range(0, N))
 
 envelope=memoize(envelope)

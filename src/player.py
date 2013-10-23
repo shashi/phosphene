@@ -31,7 +31,7 @@ def bytes(d):
 
 def graphsProcess(s):
     surface.fill((0, 0, 0))
-    graphsGraphs(surface, s.graphs)((0, 0, 640, 480))
+    graphsGraphs(surface, s.spectrum)((0, 0, 640, 480))
     display.update()
     print s.fps
 
@@ -41,10 +41,10 @@ signal = Signal(data, sF)
 
 signal.A = lift((data[:,0] + data[:,1]) / 2, True)
 
-
-# Keep a decaying maximum value of the decaying thingies
+# run setup on the signal
 setup(signal)
 
-soundObj = audio.makeSound(sF, data) # make a pygame Sound object from the data
+soundObj = audio.makeSound(sF, data)
+    # make a pygame Sound object from the data
 soundObj.play()                      # start playing it. This is non-blocking
 perceive(processes, signal, 90)      # perceive your signal.
