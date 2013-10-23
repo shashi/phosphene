@@ -2,6 +2,8 @@ import serial
 import numpy
 import math
 import device
+import emulator
+import mywireframe as wireframe
 
 # A class for the cube
 class Cube(device.Device):
@@ -38,3 +40,24 @@ class Cube(device.Device):
                         mod = 0
                         bts += 1
         return bts
+
+    def redraw(self):
+        if self.isConnected:
+            self.port.write(self.toByteStream())
+            self.port.read(size=1) #Acknowledgement		
+        else:
+                print "Connection to cube lost!"
+        if self.emulator:
+            pv = ProjectionViewer(640,480)
+            cube = wireframe.Wireframe()
+            pv.createCube(cube)
+            visible = []
+            for x in range(0,10):
+                for y in range(0,10):
+                    for z in range(0,10):
+                        if(getled[x][y][z]==1):
+                            visible.append((x,y,z))
+            cube.setVisible(findIndex(visible))
+						 
+
+cube = Cube()

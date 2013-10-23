@@ -89,6 +89,20 @@ class ProjectionViewer:
         for wireframe in self.wireframes.itervalues():
             centre = wireframe.findCentre()
             getattr(wireframe, rotateFunction)(centre, theta)
+    
+    def createCube(self,cube,X,Y,Z):
+	cube.addNodes([(x,y,z) for x in X for y in Y for z in Z]) #adding the nodes of the cube framework. 
+    	cube.addEdges([(n,n+4) for n in range(0,4)]+[(n,n+1) for n in range(0,8,2)]+[(n,n+2) for n in (0,1,4,5)]) #creating edges of the cube framework.
+    	for i in range(0,10):
+        	for j in range(0,10):
+                	for k in range(0,10):
+                        	allnodes.append((X[0]+(X[1]-X[0])/9 * i,Y[0]+(Y[1] - Y[0])/9 * j,Z[0] + (Z[1]-Z[0])/9 * k))
+
+    	cube.addNodes(allnodes)
+    	#cube.outputNodes()
+    	pv.addWireframe('cube',cube)
+
+
 
 def findIndex(coords): #Send coordinates of the points you want lit up. Will convert to needed index numbers.  
 	indices = []
@@ -107,26 +121,15 @@ def smallcube(size):
 	cubecords = [(x,y,z) for x in (start,end) for y in (start,end) for z in range(start,end+1)]+[(x,z,y) for x in (start,end) for y in (start,end) for z in range(start,end+1)] + [(z,y,x) for x in (start,end) for y in (start,end) for z in range(start,end+1)]
 	return cubecords
 	
-		
 if __name__ == '__main__':
+    
     pv = ProjectionViewer(400, 300)
     allnodes =[]
     cube = wireframe.Wireframe() #storing all the nodes in this wireframe object.
-    empty = wireframe.Wireframe() #to storing no nodes except the cube ones.
     X = [50,140]
     Y = [50,140]
     Z = [50,140] 
-    cube.addNodes([(x,y,z) for x in X for y in Y for z in Z]) #adding the nodes of the cube framework. 
-    cube.addEdges([(n,n+4) for n in range(0,4)]+[(n,n+1) for n in range(0,8,2)]+[(n,n+2) for n in (0,1,4,5)]) #creating edges of the cube framework.
-    for i in range(0,10):
-	for j in range(0,10):
-		for k in range(0,10):
-			allnodes.append((X[0]+(X[1]-X[0])/9 * i,Y[0]+(Y[1] - Y[0])/9 * j,Z[0] + (Z[1]-Z[0])/9 * k))
-	 
-    cube.addNodes(allnodes)
-    #cube.outputNodes()
-    pv.addWireframe('cube',cube)
-
+    pv.createCube(cube,X,Y,Z)
     YZface = findIndex((0,y,z) for y in range(0,10) for z in range(0,10)) 
     count = 0 
     for k in range(1,150000):
