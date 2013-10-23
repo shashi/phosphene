@@ -4,7 +4,8 @@ import math
 from device import Device
 from cubelib import emulator
 from cubelib import mywireframe as wireframe
-
+from animations import *
+import time
 # A class for the cube
 class Cube(Device):
     def __init__(self, port, dimension=10, emulator=False):
@@ -42,24 +43,22 @@ class Cube(Device):
         return bts
 
     def redraw(self):
-        if self.isConnected:
+	if self.isConnected:
             self.port.write(self.toByteStream())
             self.port.read(size=1) #Acknowledgement		
         else:
                 print "Connection to cube lost!"
         if self.emulator:
-            pv = emulator.ProjectionViewer(640,480)
-            wf = wireframe.Wireframe()
-            pv.createCube(wf)
-            visible = []
-            for x in range(0,10):
-                for y in range(0,10):
-                    for z in range(0,10):
-                        if(self.get_led(x, y, z)==1):
-                            visible.append((x,y,z))
-            wf.setVisible(emulator.findIndex(visible))
+            wf.setVisible(emulator.findIndexArray(self.array))
             pv.run()
 
 cube = Cube("", emulator=True)
+pv = emulator.ProjectionViewer(640,480)
+wf = wireframe.Wireframe()
+pv.createCube(wf)
+count = 1;
 while True:
-    cube.redraw()
+    	planeBounce(cube,1,True)
+	cube.redraw()
+	count += 2
+
