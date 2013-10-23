@@ -5,6 +5,7 @@ import pygame
 from pygame import display
 from pygame.draw import *
 import time
+import numpy
 
 key_to_function = {
     pygame.K_LEFT:   (lambda x: x.translateAll('x', -10)),
@@ -105,13 +106,26 @@ class ProjectionViewer:
 
 
 
-def findIndex(coords): #Send coordinates of the points you want lit up. Will convert to needed index numbers.  
+def findIndex(coords): #Send coordinates of the points you want lit up. Will convert to neede 
+
 	indices = []
 	for nodes in coords:
 		x,y,z = nodes
 		index = x*100+y*10+z + 8
 		indices.append(index)
 	return indices
+
+def findIndexArray(array): #Takes a 3-D numpy array containing bool of all the LED points.
+
+	indices = []
+	for i in range(0,10):
+		for j in range(0,10):
+			for k in range(0,10):
+				if(array[i][j][k] == 1):
+					index = i*100+j*10+ k + 8
+					indices.append(index)
+	return indices
+
 
 def smallcube(size):
 	if size % 2 == 1:
