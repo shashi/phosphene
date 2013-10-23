@@ -9,7 +9,6 @@ def wireframeCubeCenter(cube,size,CUBE_SIZE = 10):
         half = size/2
         start = CUBE_SIZE/2 - half
         end = CUBE_SIZE/2 + half - 1
-        #cubecords = [(x,y,z) for x in (start,end) for y in (start,end) for z in range(start,end+1)]+[(x,z,y) for x in (start,end) for y in (start,end) for z in range(start,end+1)] + [(z,y,x) for x in (start,end) for y in (start,end) for z in range(start,end+1)]
         for x in range(0,CUBE_SIZE):
 		for y in range(0,CUBE_SIZE):
 			for z in range(0,CUBE_SIZE):
@@ -81,6 +80,21 @@ def solidCube(cube,START,END,CUBE_SIZE = 10):
                         for k in range(z0,z1+1):
                                 cube.set_led(i,j,k)
 
+def setPlane(cube,axis,x,level = 1,CUBE_SIZE = 10):
+	if axis == 1:
+		for i in range(0,CUBE_SIZE):
+			for j in range(0,CUBE_SIZE):
+				cube.set_led(x,i,j,level)
+	elif axis == 2:
+		for i in range(0,CUBE_SIZE):
+                        for j in range(0,CUBE_SIZE):
+                                cube.set_led(i,x,j,level)
+	else :
+		for i in range(0,CUBE_SIZE):
+                        for j in range(0,CUBE_SIZE):
+                                cube.set_led(i,j,x,level)
+
+
 def wireframeExpandContract(cube,CUBE_SIZE = 10):
 	max_coord = CUBE_SIZE - 1
 	corners = [0,max_coord]
@@ -137,3 +151,39 @@ def wireframeExpandContract(cube,CUBE_SIZE = 10):
                                         wireframeCube(cube,(x0,y0,z0),(x0-i,y0-i,z0-i))
 		cube.redraw()
 		time.sleep(.1)
+
+def rain(cube,iterations=1000,CUBE_SIZE = 10):
+	for x in range(0,CUBE_SIZE):
+                for y in range(0,CUBE_SIZE):
+                        for z in range(0,CUBE_SIZE):
+                                cube.set_led(x,y,z,0)
+	for i in range(0,iterations):
+		number = random.choice([1,2])
+		for j in range(0,number+1):
+			x = random.choice([i for i in range(0,10)])
+			y = random.choice([i for i in range(0,10)])
+			cube.set_led(x,y,9)
+		time.sleep(.1)
+		cube.redraw()
+		for x in range(0,10):
+			for y in range(0,10):
+				for z in range(0,9):
+					cube.set_led(x,y,z,cube.get_led(x,y,z+1))
+					cube.set_led(x,y,z+1,0)	
+
+def planeBounce(cube,axis=1,repeat = False,CUBE_SIZE = 10):
+	
+	for i in range(0,CUBE_SIZE):
+		setPlane(cube,axis,i)
+		cube.redraw()
+		time.sleep(.1)
+		setPlane(cube,axis,i,0)
+	for i in range(1,CUBE_SIZE+1):
+		j = CUBE_SIZE - i
+                setPlane(cube,axis,j)
+                cube.redraw()
+                time.sleep(.1)
+                setPlane(cube,axis,j,0)
+	if(repeat):
+		planeBounce(cube,random.choice([1,2,3]),True)
+

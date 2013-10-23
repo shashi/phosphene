@@ -58,8 +58,7 @@ wf = wireframe.Wireframe()
 pv.createCube(wf)
 count = 1;
 while True:
-    	wireframeExpandContract(cube)
+    	planeBounce(cube,1,True)
 	cube.redraw()
 	count += 2
-	time.sleep(.1)
 
