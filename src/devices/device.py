@@ -5,10 +5,9 @@ class Device:
         try:
             self.port = serial.Serial(port)
             self.isConnected = True
-        except e:
+        except Exception:
             self.port = None
             self.isConnected = False
-            print e
 
     def takeSignal(self, signal):
         pass

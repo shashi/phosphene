@@ -48,8 +48,8 @@ class ProjectionViewer:
         		if event.key in key_to_function:
                 		key_to_function[event.key](self)
 
-	self.display()
-	pygame.display.flip()
+        self.display()
+        pygame.display.flip()
         
     def display(self):
         """ Draw the wireframes on the screen. """
@@ -90,8 +90,9 @@ class ProjectionViewer:
             centre = wireframe.findCentre()
             getattr(wireframe, rotateFunction)(centre, theta)
     
-    def createCube(self,cube,X,Y,Z):
-	cube.addNodes([(x,y,z) for x in X for y in Y for z in Z]) #adding the nodes of the cube framework. 
+    def createCube(self,cube,X=[50,140], Y=[50,140], Z=[50,140]):
+        cube.addNodes([(x,y,z) for x in X for y in Y for z in Z]) #adding the nodes of the cube framework. 
+        allnodes = []
     	cube.addEdges([(n,n+4) for n in range(0,4)]+[(n,n+1) for n in range(0,8,2)]+[(n,n+2) for n in (0,1,4,5)]) #creating edges of the cube framework.
     	for i in range(0,10):
         	for j in range(0,10):
@@ -100,7 +101,7 @@ class ProjectionViewer:
 
     	cube.addNodes(allnodes)
     	#cube.outputNodes()
-    	pv.addWireframe('cube',cube)
+    	self.addWireframe('cube',cube)
 
 
 
