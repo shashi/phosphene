@@ -2,6 +2,8 @@
 import serial
 import numpy
 import math
+import emulator
+import mywireframe as wireframe
 
 class Cube:
     def __init__(self, port, dimension=10, emulator=False):
@@ -20,7 +22,7 @@ class Cube:
     def set_led(self, x, y, z, level=1):
         self.array[x][y][z] = level
 
-    def set_led(self, x, y, z):
+    def get_led(self, x, y, z):
         return self.array[x][y][z]
 
 
@@ -44,8 +46,20 @@ class Cube:
     def redraw(self):
         if self.isConnected:
             self.port.write(self.toByteStream())
-            self.port.read(size=1) #Acknowledgement
-        else:
+            self.port.read(size=1) #Acknowledgement		
+	else:
             print "Connection to cube lost!"
+	if self.emulator:
+		pv = ProjectionViewer(640,480)
+		cube = wireframe.Wireframe()
+		pv.createCube(cube)
+		visible = []
+		for x in range(0,10):
+			for y in range(0,10):
+				for z in range(0,10):
+					if(getled[x][y][z]==1):
+						visible.append((x,y,z))
+		cube.setVisible(findIndex(visible))
+						 
 
 cube = Cube()
