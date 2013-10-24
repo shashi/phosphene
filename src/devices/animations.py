@@ -1,8 +1,12 @@
+import numpy
+import random
+import time
 
 from cubelib import mywireframe
 from cubelib import emulator
-import random
-import time
+
+# TODO:
+# 
 def wireframeCubeCenter(cube,size):
     if size % 2 == 1:
             size = size+1
@@ -86,18 +90,23 @@ def solidCube(cube,START,END):
                 cube.set_led(i,j,k)
 
 def setPlane(cube,axis,x,level = 1):
+
+    plane = level
+    if isinstance(level, int):
+        plane = numpy.array([[level]*10]*10, dtype=bool)
+
     if axis == 1:
         for i in range(0,cube.dimension):
             for j in range(0,cube.dimension):
-                cube.set_led(x,i,j,level)
+                cube.set_led(x,i,j,plane[i][j])
     elif axis == 2:
         for i in range(0,cube.dimension):
             for j in range(0,cube.dimension):
-                cube.set_led(i,x,j,level)
+                cube.set_led(i,x,j,plane[i][j])
     else:
         for i in range(0,cube.dimension):
             for j in range(0,cube.dimension):
-                cube.set_led(i,j,x,level)
+                cube.set_led(i,j,x,plane[i][j])
 
 
 def wireframeExpandContract(cube):
