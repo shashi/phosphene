@@ -31,7 +31,8 @@ def bytes(d):
 
 def graphsProcess(s):
     surface.fill((0, 0, 0))
-    graphsGraphs(surface, s.spectrum)((0, 0, 640, 480))
+    print s.peaks6
+    graphsGraphs(surface, [s.chan32 / 200, s.avgblend32/ 2000])((0, 0, 640, 480))
     display.update()
     print s.fps
 

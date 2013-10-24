@@ -21,6 +21,7 @@ def group(n, fft, grouping=lambda i: i):
         lambda i: i       --> linear grouping
         lambda i: 2 ** i  --> logarithmic
     """
+
     if isinstance(n, (list,tuple)):
         splitPoints = numpy.array(n, dtype=float)
         n = len(n) - 1
@@ -33,7 +34,8 @@ def group(n, fft, grouping=lambda i: i):
     splitIdx = [int(i) for i in splitIdx]
     #pdb.set_trace()
 
-    return [sum(fft[splitIdx[i-1]:splitIdx[i]]) for i in range(1, n + 1)]
+    return numpy.array(
+            [sum(fft[splitIdx[i-1]:splitIdx[i]]) for i in range(1, n + 1)])
 
 def fft(samples, out_n, env=None, eq=None):
     """
@@ -44,14 +46,20 @@ def fft(samples, out_n, env=None, eq=None):
 
     in_n = len(samples)
     if env:
-        spectrum = abs(scipy.fft(samples * envelope(in_n)))
+        spectrum = abs(scipy.fft(samples * scipy.hamming(in_n) * envelope(in_n)))
     else:
         spectrum = abs(scipy.fft(samples))
 
-    if eq:
-        return group(out_n, spectrum[0:in_n/2]) * equalize(out_n)
+    if out_n:
+        if eq:
+            return group(out_n, spectrum[0:in_n/2]) * equalize(out_n)
+        else:
+            return group(out_n, spectrum[0:in_n/2])
     else:
-        return group(out_n, spectrum[0:in_n/2])
+        if eq:
+            return spectrum[0:in_n/2] * equalize(in_n/2)
+        else:
+            return spectrum[0:in_n/2]
 
 def equalize(N, scale=-0.02):
     f = lambda i: scale * scipy.log((N-i) * 1.0/N)

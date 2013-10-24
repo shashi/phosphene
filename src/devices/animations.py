@@ -11,6 +11,8 @@ from cubelib import emulator
 # swapPlanes(axis1, plane1, axis2, plane2)
 # rain should set random LEDs on the first plane (not a lot of them)
 #   and shift the plane along that axis by one step---Fixed
+#   and shift the plane along that axis by one step
+#
 # THINK:
 #   The python code keeps sending a 125 byte string to redraw the
 #   cube as often as it can, this contains 1000 bit values that the MSP
@@ -22,13 +24,16 @@ from cubelib import emulator
 def wireframeCubeCenter(cube,size):
     if size % 2 == 1:
             size = size+1
+
     half = size/2
     start = cube.dimension/2 - half
     end = cube.dimension/2 + half - 1
+
     for x in range(0,cube.dimension):
         for y in range(0,cube.dimension):
             for z in range(0,cube.dimension):
                 cube.set_led(x,y,z,0)
+
     for x in (start,end):
         for y in (start,end):
             for z in range(start,end+1):

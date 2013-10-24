@@ -3,35 +3,58 @@ from .signal import *
 from dsp import *
 import numpy
 import pdb
+import math
 
-def maxDecaying(groups, quantity, rate=0.005):
-    return expAvg(lambda sig: max(group(groups, quantity(sig))), rate)
+def setup(signal, horizon=576):
+    # Note of awesome: this only sets up dependencies,
+    # things absolutely necessary are evaluated.
 
-def setup(signal, horizon=2048):
+    signal.fft = lift(lambda s: \
+            fft(s.A[-horizon/2:horizon/2], False, True, True))
 
-    signal.spectrum = lift(lambda s: \
-            fft(s.A[-horizon/2:horizon/2], 32, True, True))
+    for i in [3, 6, 8, 12, 16, 32]:
+        setupBands(signal, i)
 
-    signal.spectralFlux = foldp(lambda s, prev: \
-            (numpymap(lambda v: max(0, v), s.spectrum - prev[1]), s.spectrum), 0)
+def setupBands(signal, bands):
+    get = lambda s, prefix: getattr(s, prefix + str(bands))
 
+    setattr(signal, 'chan%d' % bands,
+            lift(lambda s: group(bands, s.fft))) # creates chan3, chan6..chan32
+    setattr(signal, 'avg%d' % bands,
+            blend(lambda s: get(s, 'chan'),
+                    lambda s, v, avg: 0.2 if v > avg else 0.5))
+    setattr(signal, 'longavg%d' % bands,
+            blend(lambda s: get(s, 'chan'),
+                    lambda s, v, avg: 0.9 if s.frames < 50 else 0.992))
+    # Booya.
+    setattr(signal, 'peaks%d' % bands,
+            blend(lambda s: get(s, 'chan') > 1.5 * get(s, 'avg'),
+                    lambda s, v, a: 0.2))
+    setattr(signal, 'chan%drel' % bands,
+            lift(lambda s: numpymap(lambda (x, y): x / y if y > 0.001 else 1, \
+                    zip(get(s, 'chan'), get(s, 'longavg')))))
+    setattr(signal, 'avg%drel' % bands,
+            lift(lambda s: numpymap(lambda (x, y): x / y if y > 0.001 else 1, \
+                    zip(get(s, 'avg'), get(s, 'longavg')))))
 
-def expAvg(f, ratio=lambda s: 0.5):
-    """Create the exponential averaging of a signal attribute"""
-    # ratio = (lambda s: ratio) if isinstance(ratio, float) else ratio
+def blend(f, rate=lambda s, val, avg: 0.2):
+    def blender(signal, avg):
+        vals = f(signal)
+        l = len(vals)
 
-    g = (lambda s: getattr(s, f)) if isinstance(f, str) else f
-    h = (lambda s: ratio) if isinstance(ratio, float) else ratio
+        # see foldp for why.
+        if avg[1] is None: avg = [0] * l
+        else: avg = avg[1]
 
-    return foldp(lambda s, prev: (g(s) * h(s) + \
-            prev[1] * (1-h(s)), prev[0]), 0)
+        for i in range(0, l):
+            r = rate(signal, vals[i], avg[i])
+            r = adjustRate(r, signal) # adjust based on fps
+            avg[i] = avg[i] * r + vals[i] * (1-r)
+        avg = numpy.array(avg)
+        return (avg, avg)       # required by foldp
+    return foldp(blender, None)
 
-def differential(f, nonegatives=False):
-    if nonegatives:
-        return foldp( \
-            lambda s, prev: \
-            (numpymap(lambda v: max(0, v), f(s) - prev[1]), f(s)), 0)
-    else:
-        return foldp( \
-            lambda s, prev: \
-                (f(s) - prev[1], f(s)), 0)
+def adjustRate(r, signal):
+    # THANKS MILKDROP! FOR EVERYTHING!
+    pow = math.pow
+    return pow(pow(r, signal.prefFps), 1.0/signal.fps)

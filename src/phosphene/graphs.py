@@ -20,9 +20,9 @@ def barGraph(surface, data):
             pdb.set_trace()
         w = W / l
         for i in range(0, l):
-            h = max(0, min(1, data[i]))
+            h = data[i] / 4
             c = Color(0, 0, 0, 0)
-            c.hsva = ((1-h) * 180, 100, 100, 0)
+            c.hsva = (0, 100, 100, 0)
             x = x0 + i * w
             y = y0 + H * (1 - h)
             rect(surface, c, \
