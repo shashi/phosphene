@@ -87,11 +87,15 @@ def perceive(processes, sig, prefFps):
     nY = len(sig.Y)
     prev_x = -1
     x = 0
+    sig.frames = 0
+    fps = prefFps
     while x <= nY:
+        sig.frames += 1
         tic = sig.time()
         x = int((tic-start) * sig.sF)
+        fps = fps * 0.5 + 0.5 * sig.sF / float(x - prev_x)
         # Loop.
-        sig.advance(x, sig.sF / float(x - prev_x))
+        sig.advance(x, fps)
         # Process all the processes
         for p in processes:
                 p(sig)
