@@ -55,8 +55,10 @@ if __name__ == "__main__":
     wf = wireframe.Wireframe()
     pv.createCube(wf)
     count = 1;
+    start = (0, 0, 0)
     while True:
-        planeBounce(cube,1,True)
+        # start from the previous coordinate.
+        start = wireframeExpandContract(cube, start)
         cube.redraw()
         count += 2
 

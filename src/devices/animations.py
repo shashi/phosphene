@@ -6,7 +6,19 @@ from cubelib import mywireframe
 from cubelib import emulator
 
 # TODO:
-# 
+# shiftPlane(axis, plane, delta)
+#   moves the plane along the axis by delta steps, if it exceeds dimensions, just clear it out, don't rotate.
+# swapPlanes(axis1, plane1, axis2, plane2)
+# rain should set random LEDs on the first plane (not a lot of them)
+#   and shift the plane along that axis by one step
+# THINK:
+#   The python code keeps sending a 125 byte string to redraw the
+#   cube as often as it can, this contains 1000 bit values that the MSP
+#   handles. Now, in our code we have been using time.sleep() a lot.
+#   We probably can have a counter that each of these functions uses to
+#   advance its steps, and then increment / decrement that
+#   counter according to music
+
 def wireframeCubeCenter(cube,size):
     if size % 2 == 1:
             size = size+1
@@ -109,23 +121,20 @@ def setPlane(cube,axis,x,level = 1):
                 cube.set_led(i,j,x,plane[i][j])
 
 
-def wireframeExpandContract(cube):
-    max_coord = cube.dimension - 1
-    corners = [0,max_coord]
-    x0 = random.choice(corners)
-    y0 = random.choice(corners)
-    z0 = random.choice(corners)
+def wireframeExpandContract(cube,start=(0,0,0)):
+    (x0, y0, z0) = start
+
     for i in range(0,cube.dimension):
         j = cube.dimension - i - 1
         if(x0 == 0):
             if(y0 == 0 and z0 == 0):
-                    wireframeCube(cube,(x0,y0,z0),(x0+i,y0+i,z0+i))
+                wireframeCube(cube,(x0,y0,z0),(x0+i,y0+i,z0+i))
             elif(y0 == 0):
-                    wireframeCube(cube,(x0,y0,z0),(x0+i,y0+i,z0-i))
+                wireframeCube(cube,(x0,y0,z0),(x0+i,y0+i,z0-i))
             elif(z0 == 0):
-                    wireframeCube(cube,(x0,y0,z0),(x0+i,y0-i,z0+i))
+                wireframeCube(cube,(x0,y0,z0),(x0+i,y0-i,z0+i))
             else:
-                    wireframeCube(cube,(x0,y0,z0),(x0+i,y0-i,z0-i))
+                wireframeCube(cube,(x0,y0,z0),(x0+i,y0-i,z0-i))
         else:
             if(y0 == 0 and z0 == 0):
                 wireframeCube(cube,(x0,y0,z0),(x0-i,y0+i,z0+i))
@@ -136,13 +145,14 @@ def wireframeExpandContract(cube):
             else:
                 wireframeCube(cube,(x0,y0,z0),(x0-i,y0-i,z0-i))
 
-
-        cube.redraw()    
         time.sleep(.1)
-        x0 = random.choice(corners)
-        y0 = random.choice(corners)
-        z0 = random.choice(corners)
+        cube.redraw()    
 
+    max_coord = cube.dimension - 1
+    corners = [0,max_coord]
+    x0 = random.choice(corners)
+    y0 = random.choice(corners)
+    z0 = random.choice(corners)
     for j in range(0,cube.dimension):
         i = cube.dimension - j - 1
         if(x0 == 0):
@@ -164,8 +174,9 @@ def wireframeExpandContract(cube):
             else:
                 wireframeCube(cube,(x0,y0,z0),(x0-i,y0-i,z0-i))
 
-        cube.redraw()
         time.sleep(.1)
+        cube.redraw()
+    return (x0, y0, z0) # return the final coordinate
 
 def rain(cube,iterations=1000):
     for x in range(0,cube.dimension):
