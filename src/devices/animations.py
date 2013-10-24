@@ -10,7 +10,7 @@ from cubelib import emulator
 #   moves the plane along the axis by delta steps, if it exceeds dimensions, just clear it out, don't rotate.
 # swapPlanes(axis1, plane1, axis2, plane2)
 # rain should set random LEDs on the first plane (not a lot of them)
-#   and shift the plane along that axis by one step
+#   and shift the plane along that axis by one step---Fixed
 # THINK:
 #   The python code keeps sending a 125 byte string to redraw the
 #   cube as often as it can, this contains 1000 bit values that the MSP
@@ -102,7 +102,6 @@ def solidCube(cube,START,END):
                 cube.set_led(i,j,k)
 
 def setPlane(cube,axis,x,level = 1):
-
     plane = level
     if isinstance(level, int):
         plane = numpy.array([[level]*10]*10, dtype=bool)
@@ -120,7 +119,40 @@ def setPlane(cube,axis,x,level = 1):
             for j in range(0,cube.dimension):
                 cube.set_led(i,j,x,plane[i][j])
 
+def shiftPlane(cube,axis,plane,delta):
+    if axis == 1:
+        for i in range(0,cube.dimension):
+	        for j in range(0,cube.dimension):
+			try:
+			    cube.set_led(plane+delta,i,j,cube.get_led(plane,i,j))
+                            cube.set_led(plane,i,j,0)
+			except:
+			    cube.set_led(plane,i,j,0)
+    elif axis == 2:
+        for i in range(0,cube.dimension):
+	    for j in range(0,cube.dimension):
+		try:
+		    cube.set_led(i,plane+delta,j,cube.get_led(i,plane,j))
+                    cube.set_led(i,plane,j,0)
+		except: 
+		    cube.set_led(i,plane,j,0)
+    else:
+        for i in range(0,cube.dimension):
+            for j in range(0,cube.dimension):
+		try:
+	            cube.set_led(i,j,plane+delta,cube.get_led(i,j,plane))
+                    cube.set_led(i,j,plane,0)
+                except:
+		    cube.set_led(i,j,plane,0)
+#def swapPlane(cube,axis,plane1,plane2):
 
+def randPlane(cube,minimum,maximum):
+    array = numpy.array([[0]*cube.dimension]*cube.dimension,dtype = 'bool')
+    for i in range(minimum,maximum):
+        x = random.choice([i for i in range(0,cube.dimension)]) 
+        y = random.choice([i for i in range(0,cube.dimension)])   
+        array[x][y] = 1
+    return array
 def wireframeExpandContract(cube,start=(0,0,0)):
     (x0, y0, z0) = start
 
@@ -144,8 +176,6 @@ def wireframeExpandContract(cube,start=(0,0,0)):
                 wireframeCube(cube,(x0,y0,z0),(x0-i,y0-i,z0+i))
             else:
                 wireframeCube(cube,(x0,y0,z0),(x0-i,y0-i,z0-i))
-
-        time.sleep(.1)
         cube.redraw()    
 
     max_coord = cube.dimension - 1
@@ -172,47 +202,78 @@ def wireframeExpandContract(cube,start=(0,0,0)):
             elif(z0 == 0):
                 wireframeCube(cube,(x0,y0,z0),(x0-i,y0-i,z0+i))
             else:
-                wireframeCube(cube,(x0,y0,z0),(x0-i,y0-i,z0-i))
-
-        time.sleep(.1)
+                wireframeCube(cube,(x0,y0,z0),(x0-i,y0-i,z0-i))                 
         cube.redraw()
     return (x0, y0, z0) # return the final coordinate
 
-def rain(cube,iterations=1000):
-    for x in range(0,cube.dimension):
-        for y in range(0,cube.dimension):
-            for z in range(0,cube.dimension):
-                cube.set_led(x,y,z,0)
+def rain(cube,counter,minimum,maximum,axis=3):
+    for x in range(0,10):
+        for y in range(0,10):
+            for z in range(0,9):
+                cube.set_led(x,y,z,cube.get_led(x,y,z+1))
+                cube.set_led(x,y,z+1,0)  
+    """for i in range(1,10):
+	shiftPlane(cube,axis,10-i,-1)"""
+    #if counter%10 == 0:
+    setPlane(cube,axis,9,randPlane(cube,minimum,maximum))
 
-    for i in range(0,iterations):
-        number = random.choice([1,2])
-        for j in range(0,number+1):
-            x = random.choice([i for i in range(0,10)])
-            y = random.choice([i for i in range(0,10)])
-            cube.set_led(x,y,9)
 
-        time.sleep(.1)
-        cube.redraw()
-        for x in range(0,10):
-            for y in range(0,10):
-                for z in range(0,9):
-                    cube.set_led(x,y,z,cube.get_led(x,y,z+1))
-                    cube.set_led(x,y,z+1,0)    
-
-def planeBounce(cube,axis=1,repeat = False):
     
-    for i in range(0,cube.dimension):
-        setPlane(cube,axis,i)
-        cube.redraw()
-        time.sleep(.1)
-        setPlane(cube,axis,i,0)
-    for i in range(1,cube.dimension+1):
-        j = cube.dimension - i
-        setPlane(cube,axis,j)
-        cube.redraw()
-        time.sleep(.1)
-        setPlane(cube,axis,j,0)
+def planeBounce(cube,axis,counter):
 
-    if(repeat):
-        planeBounce(cube,random.choice([1,2,3]),True)
+    i = counter%20
+    if i:
+        if i<10:          #to turn off the previous plane
+            setPlane(cube,axis,i-1,0)
+        elif i>10:
+            setPlane(cube,axis,20-i,0)
+    if i<10:
+        setPlane(cube,axis,i)
+    elif i>10:
+        setPlane(cube,axis,19-i)
+      
+def square(cube,size,translate=(0,0)):
+    x0,y0 = translate
+    array = numpy.array([[0]*cube.dimension] * cube.dimension)
+    for i in range(0,size):
+	    for j in range(0,size):
+	        array[i+x0][j+y0] = 1
+    return array
+
+def distance(point1,point2):
+    x0,y0 = point1
+    x1,y1 = point2
+    return (x0-x1)**2 + (y0-y1)**2
+
+def circle(cube,radius,translate=(0,0)):
+    x1,y1 = translate
+    array = numpy.array([[0]*cube.dimension] * cube.dimension)
+    for i in range(0,2*radius):
+        for j in range(0,2*radius):
+	    if distance((i,j),(radius,radius))<=radius:
+		array[i+x1][j+y1] = 1
+    return array
+
+def wierdshape(cube,diagonal,translate=(0,0)):
+    x1,y1 = translate
+    array =  numpy.array([[0]*cube.dimension] * cube.dimension)
+    if diagonal%2 == 0:
+		diagonal-=1
+    for y in range(0,diagonal):
+		for x in range(0,diagonal):
+			if(y>=diagonal/2):
+				if(x<=diagonal/2):
+					if(x>=y):
+						array[x][y] = 1
+				else:
+					if(x<=y):
+						array[x][y] = 1
+			else:
+				if(x<=diagonal/2):
+					if(x+y>=diagonal/2):
+						array[x][y] = 1
+				else:
+					if(x+y<=diagonal/2):
+						array[x][y] = 1		
+    return array
 

@@ -12,7 +12,7 @@ class Cube(Device):
     def __init__(self, port, dimension=10, emulator=False):
         Device.__init__(self, "Cube", port)
         self.array = numpy.array([[\
-                [1]*dimension]*dimension]*dimension, dtype='bool')
+                [0]*dimension]*dimension]*dimension, dtype='bool')
         self.dimension = dimension
         self.emulator = emulator
 
@@ -54,11 +54,12 @@ if __name__ == "__main__":
     pv = emulator.ProjectionViewer(640,480)
     wf = wireframe.Wireframe()
     pv.createCube(wf)
-    count = 1;
+    count = 0;
     start = (0, 0, 0)
     while True:
-        # start from the previous coordinate.
-        start = wireframeExpandContract(cube, start)
-        cube.redraw()
-        count += 2
+	
+	planeBounce(cube,(count/20)%2+1,count%20)
+	cube.redraw()
+	time.sleep(.1)
+        count += 1
 
