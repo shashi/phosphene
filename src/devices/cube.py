@@ -56,9 +56,15 @@ if __name__ == "__main__":
     pv.createCube(wf)
     count = 0;
     start = (0, 0, 0)
+    point = (0,0)
     while True:
 	
-	planeBounce(cube,(count/20)%2+1,count%20)
+	#planeBounce(cube,(count/20)%2+1,count%20)
+	#start = wireframeExpandContract(cube,start)
+	#rain(cube,count)
+	#time.sleep(.1)
+        #point = voxel(cube,count,point)
+	sine_wave(cube,count)
 	cube.redraw()
 	time.sleep(.1)
         count += 1

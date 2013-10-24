@@ -181,7 +181,8 @@ def wireframeExpandContract(cube,start=(0,0,0)):
                 wireframeCube(cube,(x0,y0,z0),(x0-i,y0-i,z0+i))
             else:
                 wireframeCube(cube,(x0,y0,z0),(x0-i,y0-i,z0-i))
-        cube.redraw()    
+        time.sleep(0.1)
+	cube.redraw()    
 
     max_coord = cube.dimension - 1
     corners = [0,max_coord]
@@ -209,6 +210,7 @@ def wireframeExpandContract(cube,start=(0,0,0)):
             else:
                 wireframeCube(cube,(x0,y0,z0),(x0-i,y0-i,z0-i))                 
         cube.redraw()
+	time.sleep(0.1)
     return (x0, y0, z0) # return the final coordinate
 
 def rain(cube,counter,minimum,maximum,axis=3):
@@ -281,4 +283,35 @@ def wierdshape(cube,diagonal,translate=(0,0)):
 					if(x+y<=diagonal/2):
 						array[x][y] = 1		
     return array
+def fillCube(cube,level=1):
+    for x in range(0,cube.dimension):
+	for y in range(0,cube.dimension):
+	    for z in range(0,cube.dimension):
+		cube.set_led(x,y,z,level)
+    
+def voxel(cube,counter,point):
+     x,y = point
+     if(counter==0):
+         fillCube(cube,0)
+	 for x in range(0,cube.dimension):
+            for y in range(0,cube.dimension):
+    	        cube.set_led(x,y,random.choice([0,cube.dimension-1]))    
+     if counter%10==0:
+         x = random.choice([i for i in range(0,cube.dimension)])
+         y = random.choice([i for i in range(0,cube.dimension)])
+     if cube.get_led(x,y,0)==1:
+	 cube.set_led(x,y,counter%10)
+	 cube.set_led(x,y,(counter-1)%10,0)
+     else:
+	 cube.set_led(x,y,8-(counter%10))
+	 cube.set_led(x,y,9-(counter)%10,0)
+     return (x,y)
 
+def sine_wave(cube,counter):
+    fillCube(cube,0)
+    center = (cube.dimension-1)/2.0
+    for x in range(0,cube.dimension):
+	for y in range(0,cube.dimension):
+            dist = distance((x,y),(center,center))
+	    cube.set_led(x,y,int(9*numpy.sin(dist+counter)))
+	    
