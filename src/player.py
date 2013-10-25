@@ -1,4 +1,5 @@
 import sys
+import pdb
 import pygame
 from pygame import display
 from pygame.draw import *
@@ -45,33 +46,36 @@ signal = Signal(data, sF)
 signal.A = lift((data[:,0] + data[:,1]) / 2, True)
 
 
-devs = [Waterfall("/dev/ttyACM0"),
+devs = [
+        Waterfall("/dev/ttyACM0"),
         DiscoBall("/dev/ttyACM1"),
-        LEDWall("/dev/ttyACM2")]
+        LEDWall("/dev/ttyACM2" )
+        ]
 
 for d in devs:
     d.setupSignal(signal)
 
 def devices(s):
-    threads = []
+    #threads = []
     for d in devs:
         if d.isConnected:
             def f():
                 d.redraw(s)
                 d.readAck()
-            t = Thread(target=f)
-            threads.append(t)
-            t.start()
+            #t = Thread(target=f)
+            #threads.append(t)
+            #t.start()
+            f()
 
-    for t in threads:
-        t.join(timeout=2)
-        if t.isAlive():
-            d.isUnresponsive()
+    #for t in threads:
+    #    t.join(timeout=2)
+    #    if t.isAlive():
+    #        d.isUnresponsive()
 
     surface.fill((0, 0, 0))
-    graphsGraphs(surface, filter(
+    graphsGraphs(filter(
         lambda g: g is not None,
-        [d.graphOutput(signal) for d in devs]))((0, 0, 640, 480))
+        [d.graphOutput(signal) for d in devs]))(surface, (0, 0, 640, 480))
 
 def graphsProcess(s):
     display.update()
@@ -80,6 +84,7 @@ processes = [graphsProcess, devices] #, cube.emulator]
 
 # run setup on the signal
 setup(signal)
+signal.relthresh = 1.66
 
 soundObj = audio.makeSound(sF, data)
     # make a pygame Sound object from the data
@@ -87,9 +92,7 @@ soundObj = audio.makeSound(sF, data)
 def repl():
 
     def replFunc():
-        while True:
-            code = raw_input("-> ")
-            eval(code)
+        pdb.set_trace()
 
     replThread = Thread(target=replFunc)
     replThread.start()

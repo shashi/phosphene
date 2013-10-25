@@ -52,9 +52,9 @@ def fft(samples, out_n, env=None, eq=None):
 
     if out_n:
         if eq:
-            return group(out_n, spectrum[0:in_n/2]) * equalize(out_n)
+            return group(out_n, spectrum[0:0.9*in_n/2]) * equalize(out_n)
         else:
-            return group(out_n, spectrum[0:in_n/2])
+            return group(out_n, spectrum[0:0.9*in_n/2])
     else:
         if eq:
             return spectrum[0:in_n/2] * equalize(in_n/2)

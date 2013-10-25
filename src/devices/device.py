@@ -1,4 +1,5 @@
 import serial
+import numpy
 from threading import Thread
 
 class Device:
@@ -19,8 +20,11 @@ class Device:
     def graphOutput(self, signal):
         pass
 
+    def truncate(self, array):
+        return numpy.array([min(int(i), 255) for i in array])
+
     def toByteStream(self, array):
-        return [chr(min(int(i), 255)) for i in array]
+        return [chr(i) for i in self.truncate(array)]
 
     def readAck(self):
         print self.port.read(size=1) # Read the acknowledgement

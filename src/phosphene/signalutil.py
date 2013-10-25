@@ -12,7 +12,7 @@ def setup(signal, horizon=576):
     signal.fft = lift(lambda s: \
             fft(s.A[-horizon/2:horizon/2], False, True, True))
 
-    for i in [3, 6, 8, 12, 16, 32]:
+    for i in [3, 4, 5, 6, 8, 12, 16, 32]:
         setupBands(signal, i)
 
 def setupBands(signal, bands):
@@ -22,7 +22,7 @@ def setupBands(signal, bands):
             lift(lambda s: group(bands, s.fft))) # creates chan3, chan6..chan32
     setattr(signal, 'avg%d' % bands,
             blend(lambda s: get(s, 'chan'),
-                    lambda s, v, avg: 0.5 if v > avg else 0.8))
+                    lambda s, v, avg: 0.2 if v > avg else 0.5))
     setattr(signal, 'longavg%d' % bands,
             blend(lambda s: get(s, 'chan'),
                     lambda s, v, avg: 0.9 if s.frames < 50 else 0.992))
@@ -36,8 +36,19 @@ def setupBands(signal, bands):
     setattr(signal, 'avg%drel' % bands,
             lift(lambda s: numpymap(lambda (x, y): x / y if y > 0.001 else 1, \
                     zip(get(s, 'avg'), get(s, 'longavg')))))
+    ## Detecting beats
 
-def blend(f, rate=lambda s, val, avg: 0.2):
+
+def fallingMax(f, minf=lambda s: 0.5, thresh=0.9, gravity=lambda s: 0.5):
+    def maxer(signal, prev):
+        thisFrame = f(signal)
+        minFrame = minf(signal)
+        
+        for i in range(0, len(thisFrame)):
+            if thisFrame[i] > 0.9 * prevFrame[i]: pass
+                
+
+def blend(f, rate=lambda s, val, avg: 0.3):
     def blender(signal, avg):
         vals = f(signal)
         l = len(vals)

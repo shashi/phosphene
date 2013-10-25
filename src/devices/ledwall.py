@@ -1,5 +1,6 @@
 import device
 from phosphene.signal import *
+from phosphene.graphs import *
 
 class LEDWall(device.Device):
     def __init__(self, port):
@@ -7,11 +8,11 @@ class LEDWall(device.Device):
 
     def setupSignal(self, signal):
         signal.ledwall = lift(lambda s: \
-                [s.avg8[i]/ 40 for i in range(0,8)])
+                s.discoball[:6])
 
     def graphOutput(self, signal):
-        return signal.discoball[:4]
+        return None
 
     def redraw(self, signal):
-        print "LEDWall", self.toByteStream(signal.ledwall[:-2])
-        self.port.write(self.toByteStream(signal.ledwall[:-2]))
+        print "LEDWall", self.toByteStream(signal.discoball[:6])
+        self.port.write(self.toByteStream(signal.discoball[:6]))

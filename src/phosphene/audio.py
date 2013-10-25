@@ -26,7 +26,7 @@ def read(fname):
     if not os.path.exists(oname):
         # Well, if you ctrl-c before conversion, you're going to
         # have to manually delete the file.
-        cmd = 'lame --decode %s %s' % (fname, oname)
+        cmd = 'lame --decode "%s" "%s"' % (fname, oname)
         os.system(cmd)
 
     # now read using scipy.io.wavfile

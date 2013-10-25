@@ -1,5 +1,7 @@
 import device
 from phosphene.signal import *
+import scipy, numpy
+from phosphene.graphs import barGraph
 
 def reverse(lst):
     new = [i for i in lst]
@@ -11,13 +13,18 @@ class Waterfall(device.Device):
         device.Device.__init__(self, "Waterfall", port)
 
     def setupSignal(self, signal):
-        signal.waterfall = lift(lambda s: \
-                [s.avg8[i] / 50 for i in range(0,8)])
+        def waterfall(s):
+            lights = [s.avg8[i] * 200 / max(0.5, s.longavg8[i]) \
+                            for i in range(0, 8)]
+
+            fans = [2*i for i in lights]
+            return lights + fans
+
+        signal.waterfall = lift(waterfall)
 
     def graphOutput(self, signal):
-        return reverse(signal.waterfall) + [3*i for i in signal.waterfall]
+        return barGraph(self.truncate(signal.waterfall) / 255.0)
 
     def redraw(self, signal):
-        payload = self.toByteStream()
-        print payload
+        payload = self.toByteStream(signal.waterfall)
         self.port.write(payload)

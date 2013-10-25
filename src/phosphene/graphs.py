@@ -7,26 +7,29 @@ from pygame.draw import *
 from pygame import Color
 import math
 
-def barGraph(surface, data):
+def barGraph(data):
     """
         drawing contains (x, y, width, height)
     """
 
-    def f(rectangle):
+    def f(surface, rectangle):
         x0, y0, W, H = rectangle
         try:
             l = len(data)
         except:
             pdb.set_trace()
         w = W / l
-        for i in range(0, l):
-            h = data[i] / 4
-            c = Color(0, 0, 0, 0)
-            c.hsva = (0, 100, 100, 0)
-            x = x0 + i * w
-            y = y0 + H * (1 - h)
-            rect(surface, c, \
-                    (x, y, 0.9 * w, h * H))
+        try:
+            for i in range(0, l):
+                h = data[i]
+                c = Color(0, 0, 0, 0)
+                c.hsva = (0, 100, 100, 0)
+                x = x0 + i * w
+                y = y0 + H * (1 - h)
+                rect(surface, c, \
+                        (x, y, 0.9 * w, h * H))
+        except:
+            pdb.set_trace()
     return f
 
 def circleRays(surface, center, data, transform=lambda y: scipy.log(y + 1)):
@@ -50,12 +53,12 @@ def circleRays(surface, center, data, transform=lambda y: scipy.log(y + 1)):
                     (x0,y0),(x,y),1)
             circle(surface,c, center,int(m*2),0)
    
-def graphsGraphs(surface, data, direction=0,graph=lambda *arg: barGraph(*arg)):
-    def f(bigRect):
+def graphsGraphs(graphs, direction=0):
+    def f(surface, bigRect):
         x0, y0, W, H = bigRect
-        d = H / len(data)
+        d = H / len(graphs)
         h = d
-        for l in data:
-            graph(surface, l)((x0, y0+h-d, W, h))
+        for graph in graphs:
+            graph(surface, (x0, y0+h-d, W, h))
             h += d
     return f
