@@ -1,4 +1,6 @@
 import numpy
+from threading import Thread # this is for the repl
+
 __all__ = ['memoize', 'memoizeBy', 'numpymap', 'indexable', 'reverse']
 # Helper functions
 def memoize(f, key=None):
@@ -56,6 +58,7 @@ def windowedMap(f, samples, width, overlap):
     return res
 
 def reverse(l):
-    m = l
+    m = [c for c in l]
     m.reverse()
     return m
+

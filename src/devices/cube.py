@@ -26,7 +26,7 @@ class Cube(Device):
         pass
 
     def toByteStream(self):
-        bts = '\x00' * math.ceil((dimension**3) / 8)
+        bts = '\x00' * math.ceil((self.dimension**3) / 8)
         pos = 0
         mod = 0
 

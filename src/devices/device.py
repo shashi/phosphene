@@ -1,22 +1,29 @@
+import serial
+from threading import Thread
+
 class Device:
     def __init__(self, name, port):
-        self.name = name
         self.array = []
         try:
             self.port = serial.Serial(port)
             self.isConnected = True
-        except Exception:
+            print "Connected to", name
+        except Exception as e:
             self.port = None
             self.isConnected = False
-
-    def takeSignal(self, signal):
-        pass
+            print "Error connecting to", name, e
 
     def setupSignal(self, signal):
         pass
 
-    def toByteStream(self):
-        return ''
+    def graphOutput(self, signal):
+        pass
+
+    def toByteStream(self, array):
+        return [chr(min(int(i), 255)) for i in array]
+
+    def readAck(self):
+        print self.port.read(size=1) # Read the acknowledgement
 
     def redraw(self):
         if self.isConnected:
@@ -24,4 +31,8 @@ class Device:
             self.port.read(size=1) #Acknowledgement
         else:
             print "Connection to %s lost!" % self.name
+
+    def isUnresponsive(self):
+        print "%s is not responding! Stopping to communicate."
+        self.isConnected = False
 
