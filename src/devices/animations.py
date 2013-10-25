@@ -44,6 +44,7 @@ def wireframeCubeCenter(cube,size):
 def wireframeCube(cube,START,END):
     x0,y0,z0 = START
     x1,y1,z1 = END
+    print "start:",START,"end:",END
     for x in range(0,cube.dimension):
         for y in range(0,cube.dimension):
                 for z in range(0,cube.dimension):
@@ -53,26 +54,32 @@ def wireframeCube(cube,START,END):
             if z0<z1:
                 for z in range(z0,z1+1):
                     cube.set_led(x,y,z)
+		    print x,y,z, "set-1st condition"
             else:
                 for z in range(z1,z0+1):
-                    cube.set_led(x,y,z)    
+                    cube.set_led(x,y,z)
+		    print x,y,z, "set-2nd condition"
     for x in (x0,x1):
         for z in (z0,z1):
             if y0<y1:
                 for y in range(y0,y1+1):
-                        cube.set_led(x,y,z)
+                    cube.set_led(x,y,z)
+		    print x,y,z, "Set - 1st"
             else:
                 for y in range(y1,y0+1):
                     cube.set_led(x,y,z)
+		    print x,y,z, "Set - 2nd"
 
     for y in (y0,y1):
         for z in (z0,z1):
             if x0<x1:
                 for x in range(x0,x1+1):
                     cube.set_led(x,y,z)
-                else:
-                    for x in range(x1,x0+1):
-                        cube.set_led(x,y,z)
+		    print x,y,z, "SET - 1st"
+            else:
+                for x in range(x1,x0+1):
+                    cube.set_led(x,y,z)
+                    print x,y,z, "SET - 2nd"
 
 def solidCubeCenter(cube,size):
     if size % 2 == 1:
@@ -285,9 +292,9 @@ def wierdshape(cube,diagonal,translate=(0,0)):
     return array
 def fillCube(cube,level=1):
     for x in range(0,cube.dimension):
-	for y in range(0,cube.dimension):
-	    for z in range(0,cube.dimension):
-		cube.set_led(x,y,z,level)
+	    for y in range(0,cube.dimension):
+	        for z in range(0,cube.dimension):
+		        cube.set_led(x,y,z,level)
     
 def voxel(cube,counter,point):
      x,y = point
@@ -296,22 +303,50 @@ def voxel(cube,counter,point):
 	 for x in range(0,cube.dimension):
             for y in range(0,cube.dimension):
     	        cube.set_led(x,y,random.choice([0,cube.dimension-1]))    
-     if counter%10==0:
+     if counter%9==0:
          x = random.choice([i for i in range(0,cube.dimension)])
          y = random.choice([i for i in range(0,cube.dimension)])
-     if cube.get_led(x,y,0)==1:
-	 cube.set_led(x,y,counter%10)
-	 cube.set_led(x,y,(counter-1)%10,0)
+     if cube.get_led(x,y,counter%9)==1:
+	     cube.set_led(x,y,counter%9+1)
+	     cube.set_led(x,y,counter%9,0)
      else:
-	 cube.set_led(x,y,8-(counter%10))
-	 cube.set_led(x,y,9-(counter)%10,0)
+         cube.set_led(x,y,8-(counter%9))
+         cube.set_led(x,y,9-(counter%9),0)
      return (x,y)
 
+def shiftCube(cube,axis,delta):
+       
+      for x in range(0,10):
+        for y in range(0,10):
+            for z in range(0,9):
+                if axis == 3:
+                    cube.set_led(x,y,z,cube.get_led(x,y,z+delta))
+                    cube.set_led(x,y,z+delta,0)
+                elif axis == 2:
+                    cube.set_led(x,z,y,cube.get_led(x,z+delta,y))
+                    cube.set_led(x,y,z+delta,0)
+                elif axis == 1:
+                    cube.set_led(z,x,y,cube.get_led(z+delta,x,y))
+                    cube.set_led(z+delta,x,y,0)
+
+
+def pyramids(cube,counter,axis = 3):
+    if(counter%20 <cube.dimension):
+        size = counter%10 + 1
+        setPlane(cube,axis,cube.dimension-1,square(cube,counter%10 + 1,((cube.dimension-counter%10-1)/2,(cube.dimension-counter%10-1)/2)))
+        shiftCube(cube,axis,1)
+    else:
+	size = 9 - (counter-10)%10
+	translate = (cube.dimension - size)/2
+        setPlane(cube,axis,cube.dimension-1,square(cube,size,(translate,translate)))
+	shiftCube(cube,axis,1)
+    time.sleep(0)
+    print "counter = ",counter,"size=",size
 def sine_wave(cube,counter):
     fillCube(cube,0)
     center = (cube.dimension-1)/2.0
     for x in range(0,cube.dimension):
 	for y in range(0,cube.dimension):
             dist = distance((x,y),(center,center))
-	    cube.set_led(x,y,int(9*numpy.sin(dist+counter)))
+	    cube.set_led(x,y,int(9*numpy.sin(dist+counter%100)))
 	    

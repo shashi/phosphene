@@ -60,12 +60,12 @@ if __name__ == "__main__":
     while True:
 	
 	#planeBounce(cube,(count/20)%2+1,count%20)
-	#start = wireframeExpandContract(cube,start)
-	#rain(cube,count)
+	start = wireframeExpandContract(cube,start)
+	#rain(cube,count,5,10)
 	#time.sleep(.1)
         #point = voxel(cube,count,point)
-	sine_wave(cube,count)
+	#sine_wave(cube,count)
+	#pyramids(cube,count)
 	cube.redraw()
 	time.sleep(.1)
         count += 1
-
