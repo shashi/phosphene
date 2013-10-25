@@ -35,6 +35,9 @@ def foldp(f, init):
         return val
     return lift(g)
 
+class WAIT:
+    pass
+
 class Signal:
     """ The Signal abstraction. """
     def __init__(self, Y, sF, prefFps=90):
@@ -59,11 +62,18 @@ class Signal:
             # fft is needed a multiple places
 
             if self.cache.has_key(k):
-                x, val = self.cache[k]
+                if isinstance(self.cache[k], WAIT):
+                    # Locking mechanism to avoid
+                    # redundant computations by threads
+                    while isinstance(self.cache[k], WAIT):
+                        pass
+                    return self.cache[k][1]
+                else:
+                    x, val = self.cache[k]
+                    if x == self.x:
+                        return val
 
-                if x == self.x:
-                    return val
-
+            self.cache[k] = WAIT()
             val = self.lifts[k].manifest(self)
             self.cache[k] = (self.x, val)
             return val

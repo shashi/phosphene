@@ -22,7 +22,7 @@ def setupBands(signal, bands):
             lift(lambda s: group(bands, s.fft))) # creates chan3, chan6..chan32
     setattr(signal, 'avg%d' % bands,
             blend(lambda s: get(s, 'chan'),
-                    lambda s, v, avg: 0.2 if v > avg else 0.5))
+                    lambda s, v, avg: 0.5 if v > avg else 0.8))
     setattr(signal, 'longavg%d' % bands,
             blend(lambda s: get(s, 'chan'),
                     lambda s, v, avg: 0.9 if s.frames < 50 else 0.992))
