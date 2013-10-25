@@ -3,11 +3,6 @@ from phosphene.signal import *
 import scipy, numpy
 from phosphene.graphs import barGraph
 
-def reverse(lst):
-    new = [i for i in lst]
-    new.reverse()
-    return new
-
 class Waterfall(device.Device):
     def __init__(self, port):
         device.Device.__init__(self, "Waterfall", port)
@@ -18,6 +13,7 @@ class Waterfall(device.Device):
                             for i in range(0, 8)]
 
             fans = [2*i for i in lights]
+            lights.reverse()
             return lights + fans
 
         signal.waterfall = lift(waterfall)

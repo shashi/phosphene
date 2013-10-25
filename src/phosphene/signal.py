@@ -1,7 +1,9 @@
 import pdb
 from util import *
 import time
-__all__ = ['Signal', 'lift', 'foldp', 'perceive']
+__all__ = ['Signal', 'lift', 'foldp', 'perceive', 'isPlaying']
+
+isPlaying = True
 
 class lift:
     """ Annotate an object as lifted """
@@ -100,18 +102,19 @@ def perceive(processes, sig, prefFps):
     sig.frames = 0
     fps = prefFps
     while x <= nY:
-        sig.frames += 1
-        tic = sig.time()
-        x = int((tic-start) * sig.sF)
-        fps = fps * 0.5 + 0.5 * sig.sF / float(x - prev_x)
-        # Loop.
-        sig.advance(x, fps)
-        # Process all the processes
-        for p in processes:
-                p(sig)
-        prev_x = x
-        # atrocious assumptions, but they'll serve the purpose
-        toc = sig.time()
-        wait = (tic + callSpacing - toc)
-        # chill out before looping.
-        if wait > 0: time.sleep(wait)
+        if isPlaying:
+            sig.frames += 1
+            tic = sig.time()
+            x = int((tic-start) * sig.sF)
+            fps = fps * 0.5 + 0.5 * sig.sF / float(x - prev_x)
+            # Loop.
+            sig.advance(x, fps)
+            # Process all the processes
+            for p in processes:
+                    p(sig)
+            prev_x = x
+            # atrocious assumptions, but they'll serve the purpose
+            toc = sig.time()
+            wait = (tic + callSpacing - toc)
+            # chill out before looping.
+            if wait > 0: time.sleep(wait)
