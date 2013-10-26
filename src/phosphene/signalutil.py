@@ -12,7 +12,7 @@ def setup(signal, horizon=576):
     signal.fft = lift(lambda s: \
             fft(s.A[-horizon/2:horizon/2], False, True, True))
 
-    for i in [3, 4, 5, 6, 8, 12, 16, 32]:
+    for i in [1, 3, 4, 5, 6, 8, 12, 16, 32]:
         setupBands(signal, i)
 
 def setupBands(signal, bands):
@@ -55,7 +55,10 @@ def fallingMax(f, minf=lambda s: 0.5, cutoff=0.95, gravity=lambda s: 0.9):
 
         maxVal, maxTime = prev
         mins = minf(signal)
-        s = sum(mins)
+        try:
+            s = sum(mins)
+        except:
+            s = mins
 
         for i in range(0, len(thisFrame)):
             if thisFrame[i] > cutoff * maxVal[i] and s != 0:

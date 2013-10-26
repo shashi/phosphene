@@ -10,6 +10,7 @@ import devices
 from devices.discoball import DiscoBall
 from devices.waterfall import Waterfall
 from devices.ledwall import LEDWall
+from devices.cube import Cube
 
 import phosphene
 from phosphene import audio
@@ -18,6 +19,7 @@ from phosphene.signal import *
 from phosphene.dsp import *
 from phosphene.graphs import *
 from phosphene.signalutil import *
+from cube import cubeProcess
 
 #from phosphene import cube
 from threading import Thread
@@ -49,7 +51,7 @@ signal.A = lift((data[:,0] + data[:,1]) / 2, True)
 devs = [
         Waterfall("/dev/ttyACM0"),
         DiscoBall("/dev/ttyACM1"),
-        LEDWall("/dev/ttyACM2" )
+        #LEDWall("/dev/ttyACM2")
         ]
 
 for d in devs:
@@ -77,27 +79,24 @@ def devices(s):
         lambda g: g is not None,
         [d.graphOutput(signal) for d in devs]))(surface, (0, 0, 640, 480))
 
+CubeState = lambda: 0
+CubeState.count = 0
+
+#cube = Cube("/dev/ttyACM1", emulator=True)
+def cubeUpdate(signal):
+    CubeState.count = cubeProcess(cube, signal, CubeState.count)
+
 def graphsProcess(s):
     display.update()
 
 processes = [graphsProcess, devices] #, cube.emulator]
 
-# run setup on the signal
-setup(signal)
 signal.relthresh = 1.66
 
 soundObj = audio.makeSound(sF, data)
     # make a pygame Sound object from the data
 
-def repl():
-
-    def replFunc():
-        pdb.set_trace()
-
-    replThread = Thread(target=replFunc)
-    replThread.start()
-
-repl()
-
+# run setup on the signal
+setup(signal)
 soundObj.play()                      # start playing it. This is non-blocking
 perceive(processes, signal, 90)      # perceive your signal.

@@ -9,7 +9,7 @@ class Waterfall(device.Device):
 
     def setupSignal(self, signal):
         def waterfall(s):
-            lights = [s.avg8[i] * 200 / max(0.5, s.longavg8[i]) \
+            lights = [s.avg8[i] * 150 / max(0.5, s.longavg8[i]) \
                             for i in range(0, 8)]
 
             fans = [2*i for i in lights]

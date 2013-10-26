@@ -34,7 +34,8 @@ class Device:
             self.port.write(self.toByteStream())
             self.port.read(size=1) #Acknowledgement
         else:
-            print "Connection to %s lost!" % self.name
+            #print "Connection to %s lost!" % self.name
+            pass
 
     def isUnresponsive(self):
         print "%s is not responding! Stopping to communicate."

@@ -44,7 +44,7 @@ class Cube(Device):
                         bts += 1
         return bts
 
-    def redraw(self):
+    def redraw(self, wf, pv):
         Device.redraw(self)
         if self.emulator:
             wf.setVisible(emulator.findIndexArray(self.array))
