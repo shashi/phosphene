@@ -27,13 +27,21 @@ class Cube(Device):
         pass
 
     def toByteStream(self):
-        bts = '\x00' * math.ceil((self.dimension**3) / 8)
+        # 104 bits per layer, first 4 bits waste.
+ 
+        bytesPerLayer = int(math.ceil(self.dimension**2 / 8.0))
+        print bytesPerLayer
+        discardBits = bytesPerLayer * 8 - self.dimension**2
+        print discardBits
+        bts = bytearray(bytesPerLayer*self.dimension)
+
         pos = 0
         mod = 0
 
-        for a in self.array:
-            for b in a:
-                for bit in b:
+        for layer in self.array:
+            mod = discardBits
+            for row in layer:
+                for bit in row:
                     if bit: bts[pos] |= 1 << mod
                     else: bts[pos] &= ~(1 << mod)
 
@@ -41,7 +49,7 @@ class Cube(Device):
 
                     if mod == 8:
                         mod = 0
-                        bts += 1
+                        pos += 1
         return bts
 
     def redraw(self, wf, pv):
@@ -51,25 +59,31 @@ class Cube(Device):
             pv.run()
 
 if __name__ == "__main__":
-    cube = Cube("", emulator=True)
-    pv = emulator.ProjectionViewer(640,480)
-    wf = wireframe.Wireframe()
-    pv.createCube(wf)
+    cube = Cube("/dev/ttyACM0")
+    #pv = emulator.ProjectionViewer(640,480)
+    #wf = wireframe.Wireframe()
+    #pv.createCube(wf)
     count = 0;
     start = (0, 0, 0)
     point = (0,0)
+    #fillCube(cube,0)
+    #cube.redraw()
+    #time.sleep(100)
     while True:
-	
-	#planeBounce(cube,(count/20)%2+1,count%20)
-	#start = wireframeExpandContract(cube,start)
-	#rain(cube,count,5,10)
-	#time.sleep(.1)
+        fillCube(cube,0)
+        #planeBounce(cube,(count/20)%2+1,count%20)
+        #start = wireframeExpandContract(cube,start)
+	    #rain(cube,count,5,10)
+	    #time.sleep(.1)
         #point = voxel(cube,count,point)
-	#sine_wave(cube,count)
-	#pyramids(cube,count)
-	#side_waves(cube,count)
-	#fireworks(cube,4)
-	technites(cube,count)
-	cube.redraw()
-	time.sleep(.1)
+	    #sine_wave(cube,count)
+	    #pyramids(cube,count)
+	    #side_waves(cube,count)
+	    #fireworks(cube,4)
+	    #technites(cube,count)
+	    #setPlane(cube,3,0,Z())
+	    #stringPrint(cube,'TECHNITES',count)
+        #moveFaces(cube)
+        cube.redraw()
+        time.sleep(.1)
         count += 1
