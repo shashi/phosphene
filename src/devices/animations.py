@@ -221,14 +221,7 @@ def wireframeExpandContract(cube,start=(0,0,0)):
     return (x0, y0, z0) # return the final coordinate
 
 def rain(cube,counter,minimum,maximum,axis=3):
-    for x in range(0,10):
-        for y in range(0,10):
-            for z in range(0,9):
-                cube.set_led(x,y,z,cube.get_led(x,y,z+1))
-                cube.set_led(x,y,z+1,0)  
-    """for i in range(1,10):
-	shiftPlane(cube,axis,10-i,-1)"""
-    #if counter%10 == 0:
+    shiftCube(cube,3,1)
     setPlane(cube,axis,9,randPlane(cube,minimum,maximum))
 
 
@@ -257,7 +250,7 @@ def square(cube,size,translate=(0,0)):
 def distance(point1,point2):
     x0,y0 = point1
     x1,y1 = point2
-    return (x0-x1)**2 + (y0-y1)**2
+    return numpy.sqrt((x0-x1)**2 + (y0-y1)**2)
 
 def circle(cube,radius,translate=(0,0)):
     x1,y1 = translate
@@ -342,11 +335,247 @@ def pyramids(cube,counter,axis = 3):
 	shiftCube(cube,axis,1)
     time.sleep(0)
     print "counter = ",counter,"size=",size
+
 def sine_wave(cube,counter):
     fillCube(cube,0)
     center = (cube.dimension-1)/2.0
     for x in range(0,cube.dimension):
 	for y in range(0,cube.dimension):
             dist = distance((x,y),(center,center))
-	    cube.set_led(x,y,int(9*numpy.sin(dist+counter%100)))
-	    
+	    cube.set_led(x,y,int(counter%10+numpy.sin(dist+counter)))
+
+def side_waves(cube,counter):
+    fillCube(cube,0)
+    origin_x=4.5;
+    origin_y=4.5;
+    for x in range(0,10):
+	for y in range(0,10):
+            origin_x=numpy.sin(counter);
+            origin_y=numpy.cos(counter);
+            z=int(numpy.sin(numpy.sqrt(((x-origin_x)*(x-origin_x))+((y-origin_y)*(y-origin_y))))+counter%10);
+            cube.set_led(x,y,z);
+
+def fireworks(cube,n):
+    origin_x = 3;
+    origin_y = 3;
+    origin_z = 3;
+    #Particles and their position, x,y,z and their movement,dx, dy, dz
+    origin_x = random.choice([i for i in range(0,4)])
+    origin_y = random.choice([i for i in range(0,4)])
+    origin_z = random.choice([i for i in range(0,4)])
+    origin_z +=5;
+    origin_x +=2;
+    origin_y +=2;
+    particles = [[None for _ in range(6)] for _ in range(n)]
+    print particles
+    #shoot a particle up in the air value was 600+500
+    for e in range(0,origin_z):
+        cube.set_led(origin_x,origin_y,e,1);
+	time.sleep(.05+.02*e);
+        cube.redraw()
+	fillCube(cube,0)
+    for f in range(0,n):
+        #Position
+        particles[f][0] = origin_x
+	particles[f][1] = origin_y
+	particles[f][2] = origin_z
+	rand_x = random.choice([i for i in range(0,200)])
+	rand_y = random.choice([i for i in range(0,200)])
+	rand_z = random.choice([i for i in range(0,200)])
+
+	try:
+	    #Movement
+            particles[f][3] = 1-rand_x/100.0  #dx
+            particles[f][4] = 1-rand_y/100.0  #dy
+            particles[f][5] = 1-rand_z/100.0  #dz
+	except:
+	    print "f:",f
+    #explode
+    for e in range(0,25):
+        slowrate = 1+numpy.tan((e+0.1)/20)*10
+        gravity = numpy.tan((e+0.1)/20)/2
+        for f in range(0,n):
+            particles[f][0] += particles[f][3]/slowrate
+            particles[f][1] += particles[f][4]/slowrate
+            particles[f][2] += particles[f][5]/slowrate;
+            particles[f][2] -= gravity;
+            cube.set_led(int(particles[f][0]),int(particles[f][1]),int(particles[f][2]))
+    time.sleep(1000)
+
+def T(cube):
+    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+    for i in range(0,10):
+        for j in range(0,3):
+	    plane[i][j] = 1	
+    for i in range(3,7):
+        for j in range(3,10):	        
+            plane[i][j] = 1
+    return plane
+
+def E(cube):
+    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+    for i in range(0,10):
+        for j in range(0,3):
+	    plane[i][j] = 1	
+	for j in range(4,7):
+	    plane[i][j] = 1
+	for j in range(8,10):
+            plane[i][j] = 1
+    for i in range(0,3):
+        for j in range(0,10):	        
+            plane[i][j] = 1
+    return plane
+
+def B(cube):
+    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+    for i in range(0,10):
+        for j in range(0,2):
+	    plane[i][j] = 1	
+	for j in range(4,7):
+	    plane[i][j] = 1
+	for j in range(8,10):
+            plane[i][j] = 1
+    for j in range(0,10):
+        for j in range(0,3):	        
+            plane[i][j] = 1
+	for j in range(7,10):
+	    plane[i][j]	    
+    return plane
+
+def A(cube):
+    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+    for i in range(0,10):
+        for j in range(0,2):
+	    plane[i][j] = 1	
+	for j in range(4,7):
+	    plane[i][j] = 1
+    for j in range(0,10):
+        for j in range(0,3):	        
+            plane[i][j] = 1
+	for j in range(7,10):
+	    plane[i][j]	    
+    return plane
+
+def C(cube):
+    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+    for i in range(0,10):
+        for j in range(0,3):
+	    plane[i][j] = 1	
+	for j in range(7,10):
+            plane[i][j] = 1
+    for i in range(0,3):
+        for j in range(0,10):	        
+            plane[i][j] = 1
+    return plane
+
+def D(cube):
+    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+    for i in range(0,10):
+        for j in range(0,3):
+	    plane[i][j] = 1	
+	for j in range(7,10):
+            plane[i][j] = 1
+    for j in range(0,10):
+        for i in range(0,3):	        
+            plane[i][j] = 1
+	for j in range(7,10):
+            plane[i][j] = 1
+    return plane
+
+def H(cube):
+    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+    for i in range(0,10):	
+	for j in range(4,7):
+	    plane[i][j] = 1
+    for i in range(0,3):
+        for j in range(0,10):	        
+            plane[i][j] = 1
+    for i in range(7,10):
+        for j in range(0,10):	        
+            plane[i][j] = 1
+    return plane
+
+def N(cube):
+    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+    for i in range(0,3):
+        for j in range(0,10):
+	    plane[i][j] = 1
+    for i in range(7,10):
+        for j in range(0,10):
+            plane[i][j] = 1
+    for i in range(0,10):
+        for j in range(0,10):
+            if(i == j):
+	        plane[i][j] = 1
+                try:
+                    plane[i][j-1] = 1
+                    plane[i][j+1] = 1
+		except:
+		    print "Blaaah"
+    return plane
+
+def I(cube):
+    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+    for i in range(0,10):
+        for j in range(0,3):
+	    plane[i][j] = 1
+	for j in range(7,10):
+            plane[i][j] = 1		
+    for i in range(3,7):
+        for j in range(3,10):	        
+            plane[i][j] = 1
+    
+    return plane
+
+def S(cube):
+    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+    for i in range(0,10):
+        for j in range(0,3):
+	    plane[i][j] = 1	
+	for j in range(4,7):
+	    plane[i][j] = 1
+	for j in range(8,10):
+            plane[i][j] = 1
+    for i in range(0,3):
+        for j in range(0,7):	        
+            plane[i][j] = 1
+    for i in range(7,10):
+	for j in range(4,10):
+	    plane[i][j] = 1
+    return plane
+
+
+def stringfly(cube,axis):
+    shiftCube(cube,axis,1)
+
+def technites(cube,counter,axis = 3):
+	alpha = counter/9
+	if(counter%90 == 0): 
+	    fillCube(cube,0)
+	    setPlane(cube,axis,9,T(cube))
+        elif(counter%90 == 10):
+	    fillCube(cube,0)
+            setPlane(cube,axis,9,E(cube))
+	elif(counter%90 == 20):
+	    fillCube(cube,0)
+            setPlane(cube,axis,9,C(cube))
+	elif(counter%90 == 30):
+	    fillCube(cube,0)
+            setPlane(cube,axis,9,H(cube))
+	elif(counter%90 == 40):
+	    fillCube(cube,0)
+            setPlane(cube,axis,9,N(cube))
+        elif(counter%90 == 50):
+	    fillCube(cube,0)
+            setPlane(cube,axis,9,I(cube))
+	elif(counter%90 == 60):
+	    fillCube(cube,0)
+            setPlane(cube,axis,9,T(cube))    
+        elif(counter%90 == 70):
+	    fillCube(cube,0)
+            setPlane(cube,axis,9,E(cube))
+	elif(counter%90 == 80):
+	    fillCube(cube,0)
+            setPlane(cube,axis,9,S(cube))
+        else:
+	    stringfly(cube,axis)
