@@ -402,8 +402,8 @@ def fireworks(cube,n):
             cube.set_led(int(particles[f][0]),int(particles[f][1]),int(particles[f][2]))
     time.sleep(1000)
 
-def T(cube):
-    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+def T():
+    plane = numpy.array([[0]*10] * 10) 
     for i in range(0,10):
         for j in range(0,3):
 	    plane[i][j] = 1	
@@ -412,8 +412,8 @@ def T(cube):
             plane[i][j] = 1
     return plane
 
-def E(cube):
-    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+def E():
+    plane = numpy.array([[0]*10] * 10) 
     for i in range(0,10):
         for j in range(0,3):
 	    plane[i][j] = 1	
@@ -426,64 +426,79 @@ def E(cube):
             plane[i][j] = 1
     return plane
 
-def B(cube):
-    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+def B():
+    plane = numpy.array([[0]*10] * 10) 
     for i in range(0,10):
         for j in range(0,2):
 	    plane[i][j] = 1	
-	for j in range(4,7):
+	for j in range(4,6):
 	    plane[i][j] = 1
 	for j in range(8,10):
-            plane[i][j] = 1
-    for j in range(0,10):
-        for j in range(0,3):	        
-            plane[i][j] = 1
-	for j in range(7,10):
-	    plane[i][j]	    
-    return plane
-
-def A(cube):
-    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
-    for i in range(0,10):
-        for j in range(0,2):
-	    plane[i][j] = 1	
-	for j in range(4,7):
-	    plane[i][j] = 1
-    for j in range(0,10):
-        for j in range(0,3):	        
-            plane[i][j] = 1
-	for j in range(7,10):
-	    plane[i][j]	    
-    return plane
-
-def C(cube):
-    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
-    for i in range(0,10):
-        for j in range(0,3):
-	    plane[i][j] = 1	
-	for j in range(7,10):
-            plane[i][j] = 1
-    for i in range(0,3):
-        for j in range(0,10):	        
-            plane[i][j] = 1
-    return plane
-
-def D(cube):
-    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
-    for i in range(0,10):
-        for j in range(0,3):
-	    plane[i][j] = 1	
-	for j in range(7,10):
             plane[i][j] = 1
     for j in range(0,10):
         for i in range(0,3):	        
             plane[i][j] = 1
+	for i in range(7,10):
+	    plane[i][j] = 1	    
+    plane[9][0] = 0
+    plane[9][9] = 0
+    return plane
+
+def A():
+    plane = numpy.array([[0]*10] *10) 
+    for i in range(0,10):
+        for j in range(0,2):
+	    plane[i][j] = 1	
+	for j in range(4,7):
+	    plane[i][j] = 1
+    for j in range(0,10):
+        for i in range(0,3):	        
+            plane[i][j] = 1
+	for i in range(7,10):
+	    plane[i][j]	= 1    
+    return plane
+
+def C():
+    plane = numpy.array([[0]*10] *10) 
+    for i in range(0,10):
+        for j in range(0,3):
+	    plane[i][j] = 1	
 	for j in range(7,10):
+            plane[i][j] = 1
+    for i in range(0,3):
+        for j in range(0,10):	        
             plane[i][j] = 1
     return plane
 
-def H(cube):
-    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+def D():
+    plane = numpy.array([[0]*10] * 10) 
+    for i in range(0,10):
+        for j in range(0,2):
+	    plane[i][j] = 1	
+	for j in range(8,10):
+            plane[i][j] = 1
+    for j in range(0,10):
+        for i in range(0,2):	        
+            plane[i][j] = 1
+	for i in range(8,10):
+            plane[i][j] = 1
+    plane[9][0] = 0
+    plane[9][9] = 0 
+    return plane
+def F():
+    plane = numpy.array([[0]*10] * 10) 
+    for i in range(0,10):
+        for j in range(0,3):
+	    plane[i][j] = 1	
+	for j in range(4,7):
+	    plane[i][j] = 1
+    for i in range(0,3):
+        for j in range(0,10):	        
+            plane[i][j] = 1
+    return plane
+
+def H():
+    plane = numpy.array([[0]*10] * 10) 
     for i in range(0,10):	
 	for j in range(4,7):
 	    plane[i][j] = 1
@@ -495,8 +510,105 @@ def H(cube):
             plane[i][j] = 1
     return plane
 
-def N(cube):
-    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+def G():
+    plane = numpy.array([[0]*10] * 10) 
+    for i in range(0,10):
+        for j in range(0,3):
+	    plane[i][j] = 1	
+	for j in range(7,10):
+            plane[i][j] = 1
+    for i in range(0,3):
+        for j in range(0,10):	        
+            plane[i][j] = 1
+    for i in range(7,10):
+        for j in range(4,10):
+	    plane[i][j] = 1
+    for i in range(4,10):
+        for j in range(4,6):
+            plane[i][j] = 1
+    return plane
+
+def J():
+    plane = numpy.array([[0]*10] * 10) 
+    for i in range(0,10):
+        for j in range(0,3):
+	    plane[i][j] = 1	
+    for i in range(3,7):
+        for j in range(3,10):	        
+            plane[i][j] = 1
+    for i in range(0,3):
+	for j in range(7,10):
+            plane[i][j] = 1
+    return plane
+
+def K():
+    plane = numpy.array([[0]*10]*10)
+    for j in range(0,10):
+	for i in range(0,2):
+            plane[i][j] = 1
+    for i in range(0,10):
+	for j in range(0,10):
+	     if(i == j):
+	        plane[i][5+j/2] = 1
+                try:
+                    plane[i-1][4+j/2] = 1
+                    plane[i+1][4+j/2] = 1
+		except:
+		    print "Blaaah"
+	     
+	     if(i+j==9):
+	        plane[i][j/2] = 1
+                try:
+                    plane[i-1][j/2] = 1
+                    plane[i+1][j/2] = 1
+		except:
+		    print "Blaaah"
+    plane[9][5] = 0
+    plane[9][4] = 0
+    return plane
+
+def L():
+    plane = numpy.array([[0]*10] * 10) 
+    for i in range(0,10):	
+	for j in range(7,10):
+            plane[i][j] = 1
+    for i in range(0,3):
+        for j in range(0,10):	        
+            plane[i][j] = 1
+    return plane
+
+def M():
+    plane = numpy.array([[0]*10] * 10) 
+    for i in range(0,2):
+        for j in range(0,10):
+	    plane[i][j] = 1
+    for i in range(8,10):
+        for j in range(0,10):
+            plane[i][j] = 1
+    #for i in range(4,7):
+	#for j in range(0,10):
+	 #   plane[i][j] = 1
+    for i in range(0,10):
+        for j in range(0,10):
+            if(i == j):
+	        plane[i/2][j] = 1
+                try:
+                    plane[i/2][j-1] = 1
+                    plane[i/2][j+1] = 1
+		except:
+		    print "Blaaah"
+            if(i+j==9):
+	        plane[5 + i/2][j] = 1
+                try:
+                    plane[5+i/2][j-1] = 1
+                    plane[5+i/2][j+1] = 1
+		except:
+		    print "Blaaah"
+
+    return plane
+
+def N():
+    plane = numpy.array([[0]*10] * 10) 
     for i in range(0,3):
         for j in range(0,10):
 	    plane[i][j] = 1
@@ -514,8 +626,87 @@ def N(cube):
 		    print "Blaaah"
     return plane
 
-def I(cube):
-    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+def O():
+    plane = numpy.array([[0]*10] * 10) 
+    for i in range(0,10):
+        for j in range(0,3):
+	    plane[i][j] = 1	
+	for j in range(7,10):
+            plane[i][j] = 1
+    for j in range(0,10):
+        for i in range(0,3):	        
+            plane[i][j] = 1
+        for i in range(7,10):
+            plane[i][j] = 1
+    return plane
+
+def P():
+    plane = numpy.array([[0]*10] * 10) 
+    for i in range(0,10):
+        for j in range(0,2):
+	    plane[i][j] = 1	
+	for j in range(4,7):
+	    plane[i][j] = 1
+    for i in range(0,3):
+        for j in range(0,10):	        
+            plane[i][j] = 1
+    for i in range(7,10):
+        for j in range(0,4):
+            plane[i][j] = 1
+    return plane
+
+def Q():
+    plane = numpy.array([[0]*10] * 10) 
+    for i in range(0,10):
+        for j in range(0,2):
+	    plane[i][j] = 1	
+	for j in range(8,10):
+            plane[i][j] = 1
+    for j in range(0,10):
+        for i in range(0,2):	        
+            plane[i][j] = 1
+        for i in range(8,10):
+            plane[i][j] = 1
+    for i in range(5,10):
+        for j in range(5,10):
+            if(i == j):
+	        plane[i][j] = 1
+                try:
+                    plane[i][j-1] = 1
+                    plane[i][j+1] = 1
+		except:
+		    print "Blaaah"
+ 
+    return plane
+
+def R():
+    plane = numpy.array([[0]*10] * 10) 
+    for i in range(0,10):
+        for j in range(0,3):
+	    plane[i][j] = 1	
+	for j in range(4,6):
+	    plane[i][j] = 1
+    for i in range(0,3):
+        for j in range(0,10):	        
+            plane[i][j] = 1
+    for i in range(7,10):
+        for j in range(0,4):
+            plane[i][j] = 1
+    for i in range(0,10):
+	for j in range(0,10):
+	     if(i == j):
+	        plane[i][5+j/2] = 1
+                try:
+                    plane[i-1][4+j/2] = 1
+                    plane[i+1][4+j/2] = 1
+		except:
+		    print "Blaaah"
+
+    return plane
+
+
+def I():
+    plane = numpy.array([[0]*10] * 10) 
     for i in range(0,10):
         for j in range(0,3):
 	    plane[i][j] = 1
@@ -527,8 +718,8 @@ def I(cube):
     
     return plane
 
-def S(cube):
-    plane = numpy.array([[0]*cube.dimension] * cube.dimension) 
+def S():
+    plane = numpy.array([[0]*10] * 10) 
     for i in range(0,10):
         for j in range(0,3):
 	    plane[i][j] = 1	
@@ -544,6 +735,191 @@ def S(cube):
 	    plane[i][j] = 1
     return plane
 
+def U():
+    plane = numpy.array([[0]*10] * 10) 
+    for i in range(0,10):	
+	for j in range(7,10):
+            plane[i][j] = 1
+    for j in range(0,10):
+        for i in range(0,3):	        
+            plane[i][j] = 1
+	for i in range(7,10):
+            plane[i][j] = 1
+    return plane
+
+def V():
+    plane = numpy.array([[0]*10] * 10) 
+    for i in range(0,10):
+        for j in range(0,10):
+            if(i == j):
+	        plane[i/2][j] = 1
+                try:
+                    plane[i/2][j-1] = 1
+                    plane[i/2][j+1] = 1
+		except:
+		    print "Blaaah"
+            if(i+j==9):
+	        plane[5 + i/2][j] = 1
+                try:
+                    plane[5+i/2][j-1] = 1
+                    plane[5+i/2][j+1] = 1
+		except:
+		    print "Blaaah"
+    plane[0][9] = 0
+    plane[9][9] = 0
+    return plane
+
+def W():
+    plane = numpy.array([[0]*10] * 10) 
+    for i in range(0,2):
+        for j in range(0,10):
+	    plane[i][j] = 1
+    for i in range(8,10):
+        for j in range(0,10):
+            plane[i][j] = 1
+    #for i in range(4,7):
+	#for j in range(0,10):
+	 #   plane[i][j] = 1
+    for i in range(0,10):
+        for j in range(0,10):
+            if(i == j):
+	        plane[5+i/2][j] = 1
+                try:
+                    plane[5+i/2][j+2] = 1
+                    plane[5+i/2][j+1] = 1
+		except:
+		    print "Blaaah"
+            if(i+j==9):
+	        plane[i/2][j] = 1
+                try:
+                    plane[i/2][j+2] = 1
+                    plane[i/2][j+1] = 1
+		except:
+		    print "Blaaah"
+
+    return plane
+def X():
+    plane = numpy.array([[0]*10]*10)
+    for i in range(0,10):
+        for j in range(0,10):
+            if(i == j):
+	        plane[i][j] = 1
+                try:
+                    plane[i][j-1] = 1
+                    plane[i][j+1] = 1
+		except:
+		    print "Blaaah"
+            if(i+j == 9):
+                plane[i][j] = 1
+                try:
+                    plane[i][j-1] = 1
+                    plane[i][j+1] = 1
+		except:
+		    print "Blaaah"
+
+    return plane
+
+def Y():
+    plane = numpy.array([[0]*10]*10)
+    for i in range(0,10):
+        for j in range(0,5):
+            if(i == j):
+	        plane[i][j] = 1
+                try:
+                    plane[i][j-1] = 1
+                    plane[i][j+1] = 1
+		except:
+		    print "Blaaah"
+            if(i+j == 9):
+                plane[i][j] = 1
+                try:
+                    plane[i][j-1] = 1
+                    plane[i][j+1] = 1
+		except:
+		    print "Blaaah"
+    for i in range(4,6):
+	for j in range(5,10):
+            plane[i][j] = 1
+    plane[0][9] = 0
+    plane[0][0] = 0
+    return plane
+
+def Z():
+    plane = numpy.array([[0]*10]*10)
+    for i in range(0,10):
+        for j in range(0,10):
+            if(i+j == 9):
+                plane[i][j] = 1
+                try:
+                    plane[i][j-1] = 1
+                    plane[i][j+1] = 1
+		except:
+		    print "Blaaah"
+    for i in range(0,10):
+	for j in range(0,3):
+	    plane[i][j] = 1
+	for j in range(7,10):
+	    plane[i][j] = 1
+    return plane
+
+def stringPrint(cube,string,counter=0,axis = 3):
+	if counter%10 ==0:
+		fillCube(cube,0)
+		i = string[(counter/10)%len(string)]
+		if i == 'A':
+			setPlane(cube,axis,9,A())
+    		elif i == 'B':
+    			setPlane(cube,axis,9,B())
+		elif i == 'C':
+			setPlane(cube,axis,9,C())
+		elif i == 'D':
+			setPlane(cube,axis,9,D())
+		elif i == 'E':
+			setPlane(cube,axis,9,E())
+		elif i == 'F':
+			setPlane(cube,axis,9,F())
+		elif i == 'G':
+			setPlane(cube,axis,9,G())
+		elif i == 'H':
+			setPlane(cube,axis,9,H())
+		elif i == 'I':
+			setPlane(cube,axis,9,I())
+		elif i == 'J':
+			setPlane(cube,axis,9,J())
+		elif i == 'K':
+			setPlane(cube,axis,9,K())
+		elif i == 'L':
+			setPlane(cube,axis,9,L())
+		elif i == 'M':
+			setPlane(cube,axis,9,M())
+		elif i == 'N':
+			setPlane(cube,axis,9,N())
+		elif i == 'O':
+			setPlane(cube,axis,9,O())
+		elif i == 'P':
+			setPlane(cube,axis,9,P())
+		elif i == 'Q':
+			setPlane(cube,axis,9,Q())
+		elif i == 'R':
+			setPlane(cube,axis,9,R())
+		elif i == 'S':
+			setPlane(cube,axis,9,S())
+		elif i == 'T':
+			setPlane(cube,axis,9,T())
+		elif i == 'U':
+			setPlane(cube,axis,9,U())
+		elif i == 'V':
+			setPlane(cube,axis,9,V())
+		elif i == 'W':
+			setPlane(cube,axis,9,W())
+		elif i == 'X':
+			setPlane(cube,axis,9,X())
+		elif i == 'Y':
+			setPlane(cube,axis,9,Y())
+		elif i == 'Z':
+			setPlane(cube,axis,9,Z())
+	else:
+		shiftCube(cube,axis,1)
 
 def stringfly(cube,axis):
     shiftCube(cube,axis,1)
@@ -579,3 +955,39 @@ def technites(cube,counter,axis = 3):
             setPlane(cube,axis,9,S(cube))
         else:
 	    stringfly(cube,axis)
+def moveFaces(cube):
+	Z0 = numpy.array([[0]*cube.dimension]*cube.dimension)
+	Z9 = numpy.array([[0]*cube.dimension]*cube.dimension)
+	X0 = numpy.array([[0]*cube.dimension]*cube.dimension)
+	X9 = numpy.array([[0]*cube.dimension]*cube.dimension)
+	for i in range(1,cube.dimension):
+	    for j in range(0,cube.dimension):
+		X0[i-1][j] = cube.get_led(i,j,0)
+	for j in range(0,cube.dimension):
+	    X0[9][j] = cube.get_led(9,j,0)
+        
+	for i in range(0,cube.dimension-1):
+	    for j in range(0,cube.dimension):
+		Z0[i+1][j] = cube.get_led(0,j,i)
+
+	for j in range(0,cube.dimension):
+	    Z0[0][j] = cube.get_led(0,j,0)
+     
+	for i in range(0,cube.dimension-1):
+	    for j in range(0,cube.dimension):
+		X9[i+1][j] = cube.get_led(i,j,9)
+	for j in range(0,cube.dimension):
+	    X9[0][j] = cube.get_led(0,j,9)
+
+        for i in range(1,cube.dimension):
+	    for j in range(0,cube.dimension):
+		Z9[i-1][j] = cube.get_led(9,j,i)
+
+	for j in range(0,cube.dimension):
+	    Z9[9][j] = cube.get_led(9,j,9)
+	fillCube(cube,0)
+	setPlane(cube,3,0,X0)
+	setPlane(cube,1,0,Z0)
+	setPlane(cube,3,9,X9)
+	setPlane(cube,1,9,Z9)
+
