@@ -15,6 +15,7 @@ class Cube(Device):
                 [0]*dimension]*dimension]*dimension, dtype='bool')
         self.dimension = dimension
         self.emulator = emulator
+        self.name = "Cube"
 
     def set_led(self, x, y, z, level=1):
         self.array[x][y][z] = level
@@ -61,11 +62,14 @@ if __name__ == "__main__":
 	
 	#planeBounce(cube,(count/20)%2+1,count%20)
 	#start = wireframeExpandContract(cube,start)
-	#rain(cube,count)
+	#rain(cube,count,5,10)
 	#time.sleep(.1)
         #point = voxel(cube,count,point)
-	sine_wave(cube,count)
+	#sine_wave(cube,count)
+	#pyramids(cube,count)
+	#side_waves(cube,count)
+	#fireworks(cube,4)
+	technites(cube,count)
 	cube.redraw()
 	time.sleep(.1)
         count += 1
-
