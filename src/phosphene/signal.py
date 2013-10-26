@@ -31,7 +31,7 @@ def foldp(f, init):
     State.store = init
     State.val = init
     def g(sig):
-        val, store = f(sig, (State.val, State.store))
+        val, store = f(sig, State.store)
         State.store = store
         State.val = val
         return val

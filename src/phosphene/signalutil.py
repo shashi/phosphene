@@ -38,24 +38,47 @@ def setupBands(signal, bands):
                     zip(get(s, 'avg'), get(s, 'longavg')))))
     ## Detecting beats
 
+def normalize(data, signal, divisor=None):
+    if divisor is None: divisor = lambda s, n: getattr(s, 'longavg%d' % n)
+    n = len(data)
+    divs = divisor(signal, n)
+    return numpymap(lambda (a, b): a / max(0.01, b), zip(data, divs))
 
-def fallingMax(f, minf=lambda s: 0.5, thresh=0.9, gravity=lambda s: 0.5):
+def fallingMax(f, minf=lambda s: 0.5, cutoff=0.95, gravity=lambda s: 0.9):
     def maxer(signal, prev):
+        # prev contains:
         thisFrame = f(signal)
-        minFrame = minf(signal)
-        
+
+        if prev == None:
+            init = (thisFrame, [signal.t] * len(thisFrame))
+            return (init, init)
+
+        maxVal, maxTime = prev
+        mins = minf(signal)
+        s = sum(mins)
+
         for i in range(0, len(thisFrame)):
-            if thisFrame[i] > 0.9 * prevFrame[i]: pass
-                
+            if thisFrame[i] > cutoff * maxVal[i] and s != 0:
+                # Update
+                maxVal[i] = thisFrame[i]
+                maxTime[i] = signal.t
+            else:
+                # Fall
+                maxVal[i] -= gravity(signal) * (signal.t - maxTime[i])
+        return ((maxVal, maxTime), (maxVal, maxTime))
+    return foldp(maxer, None)
+
+def boopValue(t2, maxes):
+    maxVal, maxTime = maxes
+    return numpy.array([math.exp(-(t2 - t1) * 9) for t1 in maxTime])
 
 def blend(f, rate=lambda s, val, avg: 0.3):
     def blender(signal, avg):
         vals = f(signal)
         l = len(vals)
 
-        # see foldp for why.
-        if avg[1] is None: avg = [0] * l
-        else: avg = avg[1]
+        # None is the starting value
+        if avg is None: avg = [0] * l
 
         for i in range(0, l):
             r = rate(signal, vals[i], avg[i])

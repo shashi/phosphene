@@ -8,12 +8,12 @@ class DiscoBall(device.Device):
         device.Device.__init__(self, "DiscoBall", port)
 
     def setupSignal(self, signal):
-        signal.discoball = lift(lambda s: numpymap(lambda (a, b): 255 if a**2 > b**2 * 2 else 0, zip(s.avg12, s.longavg12)))
+        signal.discoball = lift(lambda s: numpymap(lambda (a, b): 1 if a**2 > b**2 * 2 else 0, zip(s.avg12, s.longavg12)))
 
     def graphOutput(self, signal):
-        return barGraph(signal.discoball[:4])
+        return boopGraph(signal.discoball[:4])
 
     def redraw(self, signal):
-        data = self.truncate(signal.discoball[:4])
+        data = self.truncate(signal.discoball[:4] * 255)
         print data
         self.port.write(self.toByteStream(data))

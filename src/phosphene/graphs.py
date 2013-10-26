@@ -32,6 +32,28 @@ def barGraph(data):
             pdb.set_trace()
     return f
 
+def boopGraph(data):
+    def f(surface, rectangle):
+        x0, y0, W, H = rectangle
+        try:
+            l = len(data)
+        except:
+            pdb.set_trace()
+        dx = W / l
+        try:
+            for i in range(0, l):
+                d = data[i]
+                a = dx * d
+                x = (dx - a) / 2 + i * dx + x0
+                y = (H - dx) / 2 + (dx - a) / 2 + y0
+                c = Color(255, 255, 255, 255)
+                rect(surface, c, \
+                        (x, y, a, a))
+        except:
+            pdb.set_trace()
+    return f
+
+
 def circleRays(surface, center, data, transform=lambda y: scipy.log(y + 1)):
 
     x0, y0 = center
@@ -56,9 +78,8 @@ def circleRays(surface, center, data, transform=lambda y: scipy.log(y + 1)):
 def graphsGraphs(graphs, direction=0):
     def f(surface, bigRect):
         x0, y0, W, H = bigRect
-        d = H / len(graphs)
-        h = d
+        h = H / len(graphs)
         for graph in graphs:
-            graph(surface, (x0, y0+h-d, W, h))
-            h += d
+            graph(surface, (x0, y0, W, h))
+            y0 += h
     return f
