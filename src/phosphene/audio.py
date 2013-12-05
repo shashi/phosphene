@@ -12,27 +12,33 @@ __all__ = ["read", "makeSound"]
 def digest(string):
     return sha1(string).hexdigest()
 
-def read(fname):
+def read(fname, ftype="mp3"):
     """ Reads an audio file into a numpy array.
 
         returns frequency, samples
     """
-    # this is an ugly way to read mp3. But works well.
-    # www.snip2code.com/Snippet/1767/Convert-mp3-to-numpy-array--Ugly--but-it
-    suffix = digest(fname)[0:6]
-    oname = '/tmp/tmp'+ suffix +'.wav'
+    if ftype == "mp3":
+        # this is an ugly way to read mp3. But works well.
+        # www.snip2code.com/Snippet/1767/Convert-mp3-to-numpy-array--Ugly--but-it
+        suffix = digest(fname)[0:6]
+        oname = '/tmp/tmp'+ suffix +'.wav'
 
-    # ask lame to decode it to a wav file
-    if not os.path.exists(oname):
-        # Well, if you ctrl-c before conversion, you're going to
-        # have to manually delete the file.
-        cmd = 'lame --decode "%s" "%s"' % (fname, oname)
-        os.system(cmd)
+        # ask lame to decode it to a wav file
+        if not os.path.exists(oname):
+            # Well, if you ctrl-c before conversion, you're going to
+            # have to manually delete the file.
+            cmd = 'lame --decode "%s" "%s"' % (fname, oname)
+            os.system(cmd)
 
-    # now read using scipy.io.wavfile
-    data = wav.read(oname)
-    # return samplingFrequency, samples
-    return data[0], data[1]
+        # now read using scipy.io.wavfile
+        data = wav.read(oname)
+        # return samplingFrequency, samples
+        return data[0], data[1]
+    elif ftype == "wav":
+        data = wav.read(fname)
+        return data[0], data[1]
+    else:
+        raise ValueError("That format cannot be read. Use MP3 or WAV instead")
 
 def makeSound(samplingFreq, data):
     """ Make a Player object from raw data
