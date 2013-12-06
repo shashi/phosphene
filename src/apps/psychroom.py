@@ -1,19 +1,35 @@
+#
+# This script plays an mp3 file and communicates via serial.Serial
+# with devices in the Technites psychedelic room to visualize the
+# music on them.
+#
+# It talks to 4 devices
+#   WaterFall -- tubes with LEDs and flying stuff fanned to music
+#   DiscoBall -- 8 60 watt bulbs wrapped in colored paper
+#   LEDWall   -- a 4 channel strip of LED
+#                this time it was the LED roof instead :p
+#   LEDCube   -- a 10x10x10 LED cube - work on this is still on
+#
+# the script also has a sloppy pygame visualization of the fft and
+# beats data
+#
+
 import sys
-import pdb
+import time
+import scipy
 import pygame
 from pygame import display
 from pygame.draw import *
-import scipy
-import time
 
-import devices
+import pathsetup # this module sets up PYTHONPATH for all this to work
+
 from devices.discoball import DiscoBall
 from devices.waterfall import Waterfall
 from devices.ledwall import LEDWall
 from devices.cube import Cube
 
 import phosphene
-from phosphene import audio
+from phosphene import audio, signalutil, util
 from phosphene.util import *
 from phosphene.signal import *
 from phosphene.dsp import *
@@ -24,11 +40,13 @@ from cube import cubeProcess
 #from phosphene import cube
 from threading import Thread
 
-import os, sys
-if os.environ.has_key('PYTHONPATH'):
-    os.environ['PYTHONPATH'] += os.pathsep + os.path.dirname(__file__)
-else:
-    os.environ['PYTHONPATH'] = os.path.dirname(__file__)
+
+# Setup devices with their corresponding device files
+devs = [
+        Waterfall("/dev/ttyACM0"),
+        DiscoBall("/dev/ttyACM1"),
+        LEDWall("/dev/ttyACM2")
+        ]
 
 pygame.init()
 surface = display.set_mode((640, 480))
@@ -48,11 +66,6 @@ signal = Signal(data, sF)
 signal.A = lift((data[:,0] + data[:,1]) / 2, True)
 
 
-devs = [
-        Waterfall("/dev/ttyACM0"),
-        DiscoBall("/dev/ttyACM1"),
-        #LEDWall("/dev/ttyACM2")
-        ]
 
 for d in devs:
     d.setupSignal(signal)
@@ -97,6 +110,6 @@ soundObj = audio.makeSound(sF, data)
     # make a pygame Sound object from the data
 
 # run setup on the signal
-setup(signal)
+signalutil.setup(signal)
 soundObj.play()                      # start playing it. This is non-blocking
 perceive(processes, signal, 90)      # perceive your signal.
