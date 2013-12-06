@@ -1,12 +1,12 @@
-phosphene
+Phosphene
 =========
 
-phosphene is a library aimed at helping music visualization. This project is being written for visualizing music on a 10x10x10 3D LED display. Hopefully it can be made into something more general that is useful for other problems involving music visualization.
+Phosphene is a library aimed at helping music visualization. This project is being written for visualizing music on a 10x10x10 3D LED display, and other hand-made devices (see apps/psychroom.py). But the phosphene package is more general and can be used for music visualization in general.
 
 The Signal abstraction
 ----------------------
 
-The Signal class is awesome. You initialize a signal like this:
+The Signal class provides abstractions you can use to setup various kinds of attributes of a signal. You can initialize a signal from the raw wav data as shown below:
 
 ```python
 from phosphene.signal import *
@@ -16,9 +16,9 @@ mySignal = Signal(data, sampling_rate)
     # left & right channel samples
 ```
 
-Now, s has some time varying values like `mySignal.t`, the current time (unique for each `mySignal.x`); `mySignal.x`, the current sample.
+Now, `s` has some time varying values like `mySignal.t`, the current time (unique for each `mySignal.x`); `mySignal.x`, the current sample.
 
-You can lift any function to make it a time varying value associated with the signal. e.g.:
+You can lift any function to make it a time varying attribute of the signal. e.g.:
 
 ```python
 mySignal.xsquared = lift(lambda s: s.x**2)
@@ -27,7 +27,7 @@ mySignal.xsquared = lift(lambda s: s.x**2)
 Now, `mySignal.xsquared` is `mySignal.x` squared, and varies with `mySignal.x`.
 
 You can also lift long sequences of the same length as the data in
-the Signal:
+the Signal. For example, `mySignal.A` is setup in this way in Signal's contructor.
 
 ```python
 mySignal.A = lift((mySignal.Y[:, 0] + mySignal.Y[:, 1]) / 2)
@@ -72,12 +72,13 @@ processes = [barsProcess]
 perceive(processes, mySingal, fps)
 ```
 
-here, `processes` is a list of functions that do something with the current value of `s`, the signal being perceived. `perceive` simulates changes in the signal as if it is being read in real-time. see player.py for a working example use of the Signal abstraction.
+here, `processes` is a list of functions that do something with the current value of `s`, the signal being perceived. `perceive` simulates changes in the signal as if it is being read in real-time. see demo.py for a simple beat detection example.
 
 Happy Hacking!
 
 dependencies
 ------------
 
-* Python 2.7
+* Python 2.x
 * numpy, scipy and pygame python packages
+* lame

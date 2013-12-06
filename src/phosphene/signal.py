@@ -50,6 +50,7 @@ class Signal:
         self.sF = sF
         self.lifts = {}
         self.t = lift(lambda s: s.time())
+        self.A = lift(Y[:,0], True)
         self.cache = {}
 
     def time(self, t=time.time):
