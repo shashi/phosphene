@@ -13,28 +13,37 @@ def setup(signal, horizon=576):
             fft(s.A[-horizon/2:horizon/2], False, True, True))
 
     for i in [1, 3, 4, 5, 6, 8, 12, 16, 32]:
-        setupBands(signal, i)
+        setup_bands(signal, i)
 
-def setupBands(signal, bands):
-    get = lambda s, prefix: getattr(s, prefix + str(bands))
+def setup_bands(signal, bands):
+
+    def get(s, prefix):
+        return getattr(s, prefix + str(bands))
 
     setattr(signal, 'chan%d' % bands,
-            lift(lambda s: group(bands, s.fft))) # creates chan3, chan6..chan32
+            lift(lambda s: group(bands, s.fft)))
+
     setattr(signal, 'avg%d' % bands,
             blend(lambda s: get(s, 'chan'),
                     lambda s, v, avg: 0.2 if v > avg else 0.5))
+
     setattr(signal, 'longavg%d' % bands,
             blend(lambda s: get(s, 'chan'),
                     lambda s, v, avg: 0.9 if s.frames < 50 else 0.992))
     # Booya.
+    thresh = 1.7
     setattr(signal, 'peaks%d' % bands,
-            blend(lambda s: get(s, 'chan') > 1.5 * get(s, 'avg'),
+            blend(lambda s: get(s, 'avg') > thresh * get(s, 'longavg'),
                     lambda s, v, a: 0.2))
+
     setattr(signal, 'chan%drel' % bands,
-            lift(lambda s: numpymap(lambda (x, y): x / y if y > 0.001 else 1, \
+            lift(lambda s: numpymap(
+                lambda (x, y): x / y if y > 0.001 else 1,
                     zip(get(s, 'chan'), get(s, 'longavg')))))
+
     setattr(signal, 'avg%drel' % bands,
-            lift(lambda s: numpymap(lambda (x, y): x / y if y > 0.001 else 1, \
+            lift(lambda s: numpymap(
+                lambda (x, y): x / y if y > 0.001 else 1,
                     zip(get(s, 'avg'), get(s, 'longavg')))))
     ## Detecting beats
 
@@ -84,7 +93,12 @@ def blend(f, rate=lambda s, val, avg: 0.3):
         if avg is None: avg = [0] * l
 
         for i in range(0, l):
-            r = rate(signal, vals[i], avg[i])
+            if isinstance(rate, float):
+                r = rate
+            elif hasattr(rate, '__call__'):
+                r = rate(signal, vals[i], avg[i])
+            else:
+                ValueError("rate of decay must be a float or a lambda")
             r = adjustRate(r, signal) # adjust based on fps
             avg[i] = avg[i] * r + vals[i] * (1-r)
         avg = numpy.array(avg)
@@ -94,4 +108,4 @@ def blend(f, rate=lambda s, val, avg: 0.3):
 def adjustRate(r, signal):
     # THANKS MILKDROP! FOR EVERYTHING!
     pow = math.pow
-    return pow(pow(r, signal.prefFps), 1.0/signal.fps)
+    return pow(pow(r, signal.max_fps), 1.0/signal.fps)
