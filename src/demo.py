@@ -41,16 +41,22 @@ def beats(s):
             lambda (x, y): 1 if x > threshold * y else 0,
             zip(s.avg4 * threshold, s.longavg4))
 
-# Lift the beat detection
+# Lift the beats
 sig.beats = signal.lift(beats)
+# not sure if this can be called sustain.
+# blend gives a decay effect
+sig.sustain = signalutil.blend(beats, 0.7)
 
 def graphsProcess(s):
     # clear screen
     surface.fill((0, 0, 0))
     # draw a decaying fft differential and the beats in the full
     # pygame window.
-    graphsGraphs([barGraph(s.avg12rel / 10), boopGraph(s.beats)]) \
-        (surface, (0, 0) + SCREEN_DIMENSIONS)
+    graphsGraphs([
+        barGraph(s.avg12rel / 10),
+        boopGraph(s.beats),
+        boopGraph(s.sustain)
+    ])(surface, (0, 0) + SCREEN_DIMENSIONS)
     # affect the window
     display.update()
 
